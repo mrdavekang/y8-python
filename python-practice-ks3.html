@@ -284,6 +284,112 @@
     outline: none;
     tab-size: 4;
   }
+  textarea.stdin-editor {
+    width: 100%;
+    min-height: 120px;
+    background: var(--code-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+  }
+  textarea.stdin-editor:focus {
+    border-color: var(--accent);
+  }
+
+  /* ---- Python Runner ---- */
+  .runner-grid {
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .runner-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .runner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .runner-header h4 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+  }
+  .runtime-status {
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    background: var(--surface2);
+    white-space: nowrap;
+  }
+  .runtime-status.idle {
+    color: var(--text-dim);
+  }
+  .runtime-status.loading,
+  .runtime-status.running {
+    color: #90caf9;
+    border-color: #2196f3;
+    background: #15283d;
+  }
+  .runtime-status.ready {
+    color: #81c784;
+    border-color: var(--green);
+    background: var(--green-bg);
+  }
+  .runtime-status.error {
+    color: #ef9a9a;
+    border-color: var(--red);
+    background: var(--red-bg);
+  }
+  .runner-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .runner-help {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .runner-buttons {
+    margin-top: 12px;
+  }
+  .runner-console {
+    min-height: 244px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    white-space: pre-wrap;
+    overflow: auto;
+  }
+  .runner-console.placeholder {
+    color: var(--text-dim);
+  }
 
   /* ---- Expected Output ---- */
   .expected-output {
@@ -328,6 +434,11 @@
     color: #fff;
   }
   .btn-check:hover { background: var(--accent-light); }
+  .btn-run {
+    background: #2196f3;
+    color: #fff;
+  }
+  .btn-run:hover { filter: brightness(1.07); }
   .btn-next {
     background: var(--green);
     color: #fff;
@@ -346,6 +457,12 @@
     margin-left: auto;
   }
   .btn-hint:hover { border-color: var(--accent); color: var(--accent-light); }
+  .btn-clear {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .btn-clear:hover { border-color: var(--accent); color: var(--text); }
   .btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -358,6 +475,7 @@
     border-radius: 8px;
     font-size: 14px;
     display: none;
+    white-space: pre-wrap;
   }
   .feedback.success {
     display: block;
@@ -409,6 +527,11 @@
     .sidebar { display: none; }
     .content { padding: 20px 16px; }
     .progress-bar-outer { width: 120px; }
+  }
+  @media (max-width: 980px) {
+    .runner-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
@@ -686,10 +809,84 @@ const exercises = [
   }
 ];
 
+const runtimeCasesById = {
+  1: [{ inputs: [], expected: 'Alice' }],
+  2: [{ inputs: [], expected: '25' }],
+  3: [{ inputs: [], expected: 'Computing\n12' }],
+  4: [{ inputs: [], expected: 'Hello World!' }],
+  5: [{ inputs: [], expected: 'Hello, Bob' }],
+  6: [{ inputs: [], expected: 'I am learning Python\nIt is fun!' }],
+  7: [{ inputs: ['Maya'], expected: 'What is your name? Maya\nHello, Maya' }],
+  8: [{ inputs: ['blue'], expected: 'What is your favourite colour? blue\nNice! blue is a great colour!' }],
+  9: [{ inputs: ['drawing'], expected: 'What is your hobby? drawing\nCool! You like drawing' }],
+  10: [{ inputs: ['13'], expected: 'Enter your age: 13\nNext year you will be 14' }],
+  11: [{ inputs: ['7'], expected: 'Enter a number: 7\nResult: 17' }],
+  12: [
+    { inputs: ['3', '4'], expected: 'Enter number 1: 3\nEnter number 2: 4\nThe total is 7' },
+    { inputs: ['10', '0'], expected: 'Enter number 1: 10\nEnter number 2: 0\nThe total is 10' }
+  ],
+  13: [{ inputs: [], expected: "It's hot!" }],
+  14: [{ inputs: [], expected: 'Try again' }],
+  15: [{ inputs: [], expected: 'B' }],
+  16: [
+    { inputs: ['18'], expected: 'Enter your age: 18\nYou are an adult' },
+    { inputs: ['17'], expected: 'Enter your age: 17\nYou are a minor' }
+  ],
+  17: [
+    { inputs: ['red'], expected: 'What colour is the light? red\nStop' },
+    { inputs: ['amber'], expected: 'What colour is the light? amber\nGet ready' },
+    { inputs: ['green'], expected: 'What colour is the light? green\nGo' },
+    { inputs: ['blue'], expected: 'What colour is the light? blue\nInvalid colour' }
+  ],
+  18: [
+    { inputs: ['Paris'], expected: 'What is the capital of France? Paris\nCorrect!' },
+    { inputs: ['Rome'], expected: 'What is the capital of France? Rome\nWrong! The answer is Paris' }
+  ]
+};
+
+exercises.forEach(ex => {
+  ex.runCases = runtimeCasesById[ex.id] || [];
+});
+
 // ===================== STATE =====================
 let currentIndex = 0;
 let completed = {};  // { exerciseId: true/false }
 let attempts = {};   // { exerciseId: number }
+let work = {};       // { exerciseId: { code, blanks, stdin, console } }
+let pyodidePromise = null;
+let pyodideReady = false;
+let pyodideLoading = false;
+let pyodideError = '';
+let runnerBusy = false;
+let activeRuntimeSession = null;
+
+const PYODIDE_BASE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.22.0/full/';
+const PYTHON_RUNNER_WRAPPER = String.raw`
+import builtins
+import js
+import sys
+import traceback
+
+def __browser_input(prompt=""):
+    return js.pyInput(str(prompt))
+
+class __BrowserWriter:
+    def write(self, data):
+        if data is not None and data != "":
+            js.pyWrite(str(data))
+    def flush(self):
+        pass
+
+builtins.input = __browser_input
+sys.stdout = __BrowserWriter()
+sys.stderr = __BrowserWriter()
+
+try:
+    exec(js.__studentCode, {"__name__": "__main__"})
+except Exception:
+    js.pyMarkError()
+    traceback.print_exc()
+`;
 
 // ===================== RENDER SIDEBAR =====================
 function renderSidebar() {
@@ -720,6 +917,7 @@ function renderSidebar() {
 // ===================== RENDER EXERCISE =====================
 function renderExercise() {
   const ex = exercises[currentIndex];
+  const state = getWorkState(ex);
   const main = document.getElementById('mainContent');
 
   const typeTag = ex.type === 'fill' ? '<span class="tag fill">Fill in the Blanks</span>' : '<span class="tag code">Write Code</span>';
@@ -733,12 +931,13 @@ function renderExercise() {
         linesHTML += `<span class="code-line">${escapeHTML(line.before)}${escapeHTML(line.after)}</span>`;
       } else {
         const w = Math.max(line.blank.length * 10 + 20, 80);
-        linesHTML += `<span class="code-line">${escapeHTML(line.before)}<input class="blank" data-line="${li}" data-answer="${escapeAttr(line.blank)}" style="width:${w}px" spellcheck="false" autocomplete="off">${escapeHTML(line.after)}</span>`;
+        const savedValue = state.blanks[li] || '';
+        linesHTML += `<span class="code-line">${escapeHTML(line.before)}<input class="blank" data-line="${li}" data-answer="${escapeAttr(line.blank)}" style="width:${w}px" value="${escapeAttr(savedValue)}" spellcheck="false" autocomplete="off" oninput="saveBlank(${ex.id}, ${li}, this.value)">${escapeHTML(line.after)}</span>`;
       }
     });
     editorHTML = `<div class="fill-editor">${linesHTML}</div>`;
   } else {
-    editorHTML = `<textarea class="code-editor" id="codeEditor" spellcheck="false">${escapeHTML(ex.starterCode || '')}</textarea>`;
+    editorHTML = `<textarea class="code-editor" id="codeEditor" spellcheck="false" oninput="saveCode(${ex.id}, this.value)" onkeydown="handleEditorKeydown(event)">${escapeHTML(state.code)}</textarea>`;
   }
 
   let expectedHTML = '';
@@ -748,6 +947,38 @@ function renderExercise() {
       <pre>${escapeHTML(ex.expectedOutput)}</pre>
     </div>`;
   }
+
+  const defaultRunCase = ex.runCases[0];
+  const inputLabel = defaultRunCase && defaultRunCase.inputs.length ? 'Program Input' : 'Program Input (optional)';
+  const inputHelp = defaultRunCase && defaultRunCase.inputs.length
+    ? 'Suggested input is prefilled below. Use one line per input() call, just like pressing Enter in IDLE.'
+    : 'This exercise does not need input, but you can still experiment here if you want.';
+  const consoleText = state.console || 'Run your code to see the Python output here.';
+  const runtimeState = getRuntimeState();
+  const runnerHTML = `
+    <div class="runner-grid">
+      <section class="runner-panel">
+        <div class="runner-header">
+          <h4>Python Runner</h4>
+          <span class="runtime-status ${runtimeState.className}" id="runtimeStatus">${runtimeState.label}</span>
+        </div>
+        <label class="runner-label" for="stdinEditor">${inputLabel}</label>
+        <p class="runner-help">${inputHelp}</p>
+        <textarea class="stdin-editor" id="stdinEditor" spellcheck="false" oninput="saveStdin(${ex.id}, this.value)" onkeydown="handleRunnerKeydown(event)">${escapeHTML(state.stdin)}</textarea>
+        <div class="btn-row runner-buttons">
+          <button class="btn btn-run" id="runBtn" onclick="runCurrentCode()">Run Code</button>
+          <button class="btn btn-clear" onclick="clearConsole()">Clear Output</button>
+        </div>
+      </section>
+
+      <section class="runner-panel">
+        <div class="runner-header">
+          <h4>Console Output</h4>
+        </div>
+        <pre class="runner-console${state.console ? '' : ' placeholder'}" id="runnerConsole">${escapeHTML(consoleText)}</pre>
+      </section>
+    </div>
+  `;
 
   main.innerHTML = `
     <div class="exercise-content">
@@ -771,6 +1002,7 @@ function renderExercise() {
       </div>
 
       ${expectedHTML}
+      ${runnerHTML}
 
       <div class="btn-row">
         <button class="btn btn-prev" onclick="prev()" ${currentIndex === 0 ? 'disabled' : ''}>Previous</button>
@@ -793,10 +1025,11 @@ function renderExercise() {
 
   renderSidebar();
   updateProgress();
+  syncRuntimeControls();
 }
 
 // ===================== CHECK ANSWER =====================
-function checkAnswer() {
+async function checkAnswer() {
   const ex = exercises[currentIndex];
   const fb = document.getElementById('feedback');
 
@@ -836,52 +1069,40 @@ function checkAnswer() {
       return;
     }
 
-    // Check for output_match type
-    const outputCheck = ex.checks.find(c => c.type === 'output_match');
-    if (outputCheck) {
-      // For output match, check that the print statements contain the right text
-      const prints = extractPrintContents(code);
-      const expectedLines = outputCheck.value.split('\n');
-      let matched = true;
-      for (const line of expectedLines) {
-        const found = prints.some(p => p.toLowerCase().includes(line.toLowerCase()));
-        if (!found) { matched = false; break; }
-      }
-      if (matched) {
-        completed[ex.id] = true;
-        fb.className = 'feedback success';
-        fb.textContent = 'Correct! Your code looks great!';
-      } else {
-        completed[ex.id] = false;
-        fb.className = 'feedback error';
-        fb.textContent = `Check your print statements. Expected output:\n${outputCheck.value}`;
-      }
-      renderSidebar();
-      updateProgress();
-      return;
-    }
-
-    // Contains checks
-    let allPass = true;
-    let failMsg = '';
-    for (const check of ex.checks) {
-      if (check.type === 'contains') {
-        if (!code.includes(check.value)) {
-          allPass = false;
-          failMsg = check.msg;
-          break;
-        }
-      }
-    }
-
-    if (allPass) {
-      completed[ex.id] = true;
-      fb.className = 'feedback success';
-      fb.textContent = 'Correct! Well done!';
-    } else {
+    const containsFailure = findContainsFailure(ex, code);
+    if (containsFailure) {
       completed[ex.id] = false;
       fb.className = 'feedback error';
-      fb.textContent = failMsg || 'Not quite right. Check the requirements and try again.';
+      fb.textContent = containsFailure;
+    } else {
+      runnerBusy = true;
+      syncRuntimeControls();
+
+      try {
+        const runtimeResult = await runExerciseCases(ex, code);
+        if (runtimeResult.ok) {
+          completed[ex.id] = true;
+          fb.className = 'feedback success';
+          fb.textContent = 'Correct! Your code passed the Python checks.';
+        } else {
+          completed[ex.id] = false;
+          fb.className = 'feedback error';
+          fb.textContent = runtimeResult.message;
+        }
+      } catch (error) {
+        completed[ex.id] = false;
+        fb.className = 'feedback error';
+        fb.textContent = `The Python runner could not start: ${error.message || error}`;
+      } finally {
+        runnerBusy = false;
+        syncRuntimeControls();
+      }
+    }
+
+    if (completed[ex.id]) {
+      completed[ex.id] = true;
+      fb.className = 'feedback success';
+      fb.textContent = fb.textContent || 'Correct! Well done!';
     }
   }
 
@@ -889,14 +1110,384 @@ function checkAnswer() {
   updateProgress();
 }
 
-function extractPrintContents(code) {
-  const matches = [];
-  const regex = /print\s*\(\s*["']([^"']*)["']\s*\)/g;
-  let m;
-  while ((m = regex.exec(code)) !== null) {
-    matches.push(m[1]);
+function getDefaultInput(ex) {
+  const firstCase = ex.runCases && ex.runCases[0];
+  return firstCase ? firstCase.inputs.join('\n') : '';
+}
+
+function getWorkState(ex) {
+  if (!work[ex.id]) {
+    work[ex.id] = {
+      code: ex.starterCode || '',
+      blanks: {},
+      stdin: getDefaultInput(ex),
+      console: ''
+    };
   }
-  return matches;
+
+  if (typeof work[ex.id].code !== 'string') work[ex.id].code = ex.starterCode || '';
+  if (!work[ex.id].blanks) work[ex.id].blanks = {};
+  if (typeof work[ex.id].stdin !== 'string') work[ex.id].stdin = getDefaultInput(ex);
+  if (typeof work[ex.id].console !== 'string') work[ex.id].console = '';
+
+  return work[ex.id];
+}
+
+function getWorkStateById(exId) {
+  const exercise = exercises.find(ex => ex.id === Number(exId));
+  return exercise ? getWorkState(exercise) : null;
+}
+
+function saveCode(exId, value) {
+  const state = getWorkStateById(exId);
+  if (state) state.code = value;
+}
+
+function saveBlank(exId, lineIndex, value) {
+  const state = getWorkStateById(exId);
+  if (state) state.blanks[lineIndex] = value;
+}
+
+function saveStdin(exId, value) {
+  const state = getWorkStateById(exId);
+  if (state) state.stdin = value;
+}
+
+function insertTextAtCursor(field, text) {
+  const start = field.selectionStart;
+  const end = field.selectionEnd;
+  field.setRangeText(text, start, end, 'end');
+  field.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function handleEditorKeydown(event) {
+  if (event.key === 'Tab') {
+    event.preventDefault();
+    insertTextAtCursor(event.target, '    ');
+    return;
+  }
+
+  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+    event.preventDefault();
+    runCurrentCode();
+  }
+}
+
+function handleRunnerKeydown(event) {
+  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+    event.preventDefault();
+    runCurrentCode();
+  }
+}
+
+function buildExerciseCode(ex) {
+  const state = getWorkState(ex);
+
+  if (ex.type === 'fill') {
+    return ex.lines.map((line, index) => {
+      const filled = line.blank === '' ? '' : (state.blanks[index] || '');
+      return `${line.before}${filled}${line.after}`;
+    }).join('\n');
+  }
+
+  return state.code;
+}
+
+function getConsolePlaceholder() {
+  return 'Run your code to see the Python output here.';
+}
+
+function setConsoleOutput(exId, text) {
+  const state = getWorkStateById(exId);
+  if (!state) return;
+
+  state.console = text;
+
+  const currentExercise = exercises[currentIndex];
+  if (!currentExercise || currentExercise.id !== Number(exId)) return;
+
+  const consoleEl = document.getElementById('runnerConsole');
+  if (!consoleEl) return;
+
+  consoleEl.textContent = text || getConsolePlaceholder();
+  consoleEl.classList.toggle('placeholder', !text);
+}
+
+function clearConsole() {
+  const ex = exercises[currentIndex];
+  setConsoleOutput(ex.id, '');
+}
+
+function normalizeConsoleText(text) {
+  return (text || '')
+    .replace(/\r/g, '')
+    .split('\n')
+    .map(line => line.replace(/\s+$/g, ''))
+    .join('\n')
+    .trim();
+}
+
+function getRuntimeState() {
+  if (pyodideError) return { label: 'Unavailable', className: 'error' };
+  if (runnerBusy) return { label: 'Running...', className: 'running' };
+  if (pyodideLoading) return { label: 'Loading Python...', className: 'loading' };
+  if (pyodideReady) return { label: 'Ready', className: 'ready' };
+  return { label: 'Load on first run', className: 'idle' };
+}
+
+function syncRuntimeControls() {
+  const state = getRuntimeState();
+  const statusEl = document.getElementById('runtimeStatus');
+  const runBtn = document.getElementById('runBtn');
+  const checkBtn = document.querySelector('.btn-check');
+
+  if (statusEl) {
+    statusEl.className = `runtime-status ${state.className}`;
+    statusEl.textContent = state.label;
+  }
+
+  if (runBtn) {
+    runBtn.disabled = runnerBusy || pyodideLoading || Boolean(pyodideError);
+  }
+
+  if (checkBtn) {
+    checkBtn.disabled = runnerBusy;
+  }
+}
+
+async function loadPyodideScript() {
+  if (typeof window.loadPyodide === 'function') return;
+
+  await new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-pyodide="true"]');
+
+    if (existing) {
+      existing.addEventListener('load', resolve, { once: true });
+      existing.addEventListener('error', () => reject(new Error('Could not load Pyodide.')), { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `${PYODIDE_BASE_URL}pyodide.js`;
+    script.async = true;
+    script.dataset.pyodide = 'true';
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('Could not load Pyodide from the CDN.'));
+    document.head.appendChild(script);
+  });
+}
+
+async function ensurePyodide() {
+  if (pyodideReady && pyodidePromise) {
+    return pyodidePromise;
+  }
+
+  if (!pyodidePromise) {
+    pyodideLoading = true;
+    pyodideError = '';
+    syncRuntimeControls();
+
+    pyodidePromise = (async () => {
+      await loadPyodideScript();
+      const runtime = await window.loadPyodide({ indexURL: PYODIDE_BASE_URL });
+      pyodideReady = true;
+      return runtime;
+    })().catch(error => {
+      pyodidePromise = null;
+      pyodideReady = false;
+      pyodideError = error.message || 'Could not start the Python runner.';
+      throw error;
+    }).finally(() => {
+      pyodideLoading = false;
+      syncRuntimeControls();
+    });
+  }
+
+  return pyodidePromise;
+}
+
+function createRuntimeSession(exId, inputLines, showInConsole) {
+  const session = {
+    exId: Number(exId),
+    inputQueue: [...(inputLines || [])],
+    inputIndex: 0,
+    output: '',
+    missingInput: false,
+    hadError: false,
+    showInConsole,
+    write(chunk) {
+      if (!chunk) return;
+      this.output += chunk;
+      if (this.showInConsole) {
+        setConsoleOutput(this.exId, this.output);
+      }
+    },
+    read(prompt = '') {
+      if (prompt) this.write(prompt);
+
+      const nextValue = this.inputQueue[this.inputIndex];
+      if (typeof nextValue === 'undefined') {
+        this.missingInput = true;
+        this.write('[No more input provided]\n');
+        return '';
+      }
+
+      this.inputIndex += 1;
+      this.write(`${nextValue}\n`);
+      return nextValue;
+    },
+    markError() {
+      this.hadError = true;
+    }
+  };
+
+  if (showInConsole) {
+    setConsoleOutput(exId, '');
+  }
+
+  return session;
+}
+
+window.pyWrite = function(chunk) {
+  if (activeRuntimeSession) activeRuntimeSession.write(chunk);
+};
+
+window.pyInput = function(prompt) {
+  return activeRuntimeSession ? activeRuntimeSession.read(prompt || '') : '';
+};
+
+window.pyMarkError = function() {
+  if (activeRuntimeSession) activeRuntimeSession.markError();
+};
+
+async function executePython(code, inputLines, options = {}) {
+  const pyodide = await ensurePyodide();
+  const session = createRuntimeSession(options.exerciseId, inputLines, Boolean(options.showInConsole));
+
+  activeRuntimeSession = session;
+  window.__studentCode = code;
+
+  try {
+    await pyodide.runPythonAsync(PYTHON_RUNNER_WRAPPER);
+  } catch (error) {
+    session.hadError = true;
+    session.write(`Runner error: ${error.message || error}\n`);
+  } finally {
+    activeRuntimeSession = null;
+    delete window.__studentCode;
+  }
+
+  return {
+    ok: !session.hadError && !session.missingInput,
+    output: session.output,
+    hadError: session.hadError,
+    missingInput: session.missingInput
+  };
+}
+
+async function runCurrentCode() {
+  if (runnerBusy) return;
+
+  const ex = exercises[currentIndex];
+  const state = getWorkState(ex);
+  const code = buildExerciseCode(ex);
+
+  if (ex.type === 'code' && (code.trim() === '' || code.trim() === (ex.starterCode || '').trim())) {
+    setConsoleOutput(ex.id, 'Write your code first, then run it here.');
+    return;
+  }
+
+  runnerBusy = true;
+  syncRuntimeControls();
+
+  try {
+    const inputLines = state.stdin === '' ? [] : state.stdin.split(/\r?\n/);
+    const result = await executePython(code, inputLines, { exerciseId: ex.id, showInConsole: true });
+
+    if (!result.output) {
+      setConsoleOutput(ex.id, '[Program finished with no output]');
+    }
+  } catch (error) {
+    setConsoleOutput(ex.id, `Runner unavailable: ${error.message || error}`);
+  } finally {
+    runnerBusy = false;
+    syncRuntimeControls();
+  }
+}
+
+function findContainsFailure(ex, code) {
+  if (!Array.isArray(ex.checks)) return '';
+
+  for (const check of ex.checks) {
+    if (check.type === 'contains' && !code.includes(check.value)) {
+      return check.msg;
+    }
+  }
+
+  return '';
+}
+
+function loadRunCaseInput(exId, inputs) {
+  const state = getWorkStateById(exId);
+  if (!state) return;
+
+  state.stdin = (inputs || []).join('\n');
+
+  const currentExercise = exercises[currentIndex];
+  if (!currentExercise || currentExercise.id !== Number(exId)) return;
+
+  const stdinEditor = document.getElementById('stdinEditor');
+  if (stdinEditor) stdinEditor.value = state.stdin;
+}
+
+function buildMismatchMessage(runCase, expected, actual) {
+  const inputSummary = runCase.inputs && runCase.inputs.length
+    ? `Test input:\n${runCase.inputs.join('\n')}\n\n`
+    : '';
+
+  return `Your code ran, but the output did not match this test.\n\n${inputSummary}Expected:\n${expected || '[no output]'}\n\nGot:\n${actual || '[no output]'}`;
+}
+
+async function runExerciseCases(ex, code) {
+  if (!ex.runCases || !ex.runCases.length) {
+    return { ok: true };
+  }
+
+  for (const runCase of ex.runCases) {
+    const result = await executePython(code, runCase.inputs || [], { exerciseId: ex.id, showInConsole: false });
+
+    if (result.missingInput) {
+      loadRunCaseInput(ex.id, runCase.inputs || []);
+      setConsoleOutput(ex.id, result.output || '[Program finished with no output]');
+      return {
+        ok: false,
+        message: 'Your program asked for more input than this test provided. I loaded the test input into Program Input so you can run it and debug.'
+      };
+    }
+
+    if (result.hadError) {
+      loadRunCaseInput(ex.id, runCase.inputs || []);
+      setConsoleOutput(ex.id, result.output || '[Program finished with no output]');
+      return {
+        ok: false,
+        message: 'Your code hit an error while running. I loaded the test input into Program Input so you can run it below and fix the problem.'
+      };
+    }
+
+    const actual = normalizeConsoleText(result.output);
+    const expected = normalizeConsoleText(runCase.expected);
+
+    if (actual !== expected) {
+      loadRunCaseInput(ex.id, runCase.inputs || []);
+      setConsoleOutput(ex.id, result.output || '[Program finished with no output]');
+      return {
+        ok: false,
+        message: buildMismatchMessage(runCase, expected, actual)
+      };
+    }
+  }
+
+  return { ok: true };
 }
 
 // ===================== HINT =====================
@@ -965,6 +1556,7 @@ function restart() {
   currentIndex = 0;
   completed = {};
   attempts = {};
+  work = {};
   renderExercise();
 }
 
@@ -975,7 +1567,12 @@ function escapeHTML(str) {
   return div.innerHTML;
 }
 function escapeAttr(str) {
-  return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 // ===================== INIT =====================
