@@ -301,6 +301,25 @@
   textarea.stdin-editor:focus {
     border-color: var(--accent);
   }
+  textarea.runner-code-editor {
+    width: 100%;
+    min-height: 180px;
+    background: var(--code-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    tab-size: 4;
+    margin-bottom: 12px;
+  }
+  textarea.runner-code-editor:focus {
+    border-color: var(--accent);
+  }
 
   /* ---- Python Runner ---- */
   .runner-grid {
@@ -953,6 +972,9 @@ function renderExercise() {
   const inputHelp = defaultRunCase && defaultRunCase.inputs.length
     ? 'Suggested input is prefilled below. Use one line per input() call, just like pressing Enter in IDLE.'
     : 'This exercise does not need input, but you can still experiment here if you want.';
+  const runnerHelp = ex.type === 'fill'
+    ? 'This runner is a separate editable Python sandbox. Type code here, or load the current exercise code into it.'
+    : 'This runner is a separate editable Python sandbox. Type code here, or load your current answer into it.';
   const consoleText = state.console || 'Run your code to see the Python output here.';
   const runtimeState = getRuntimeState();
   const runnerHTML = `
@@ -962,11 +984,15 @@ function renderExercise() {
           <h4>Python Runner</h4>
           <span class="runtime-status ${runtimeState.className}" id="runtimeStatus">${runtimeState.label}</span>
         </div>
+        <label class="runner-label" for="runnerCodeEditor">Python Code</label>
+        <p class="runner-help">${runnerHelp}</p>
+        <textarea class="runner-code-editor" id="runnerCodeEditor" spellcheck="false" oninput="saveRunnerCode(${ex.id}, this.value)" onkeydown="handleEditorKeydown(event)">${escapeHTML(state.runnerCode)}</textarea>
         <label class="runner-label" for="stdinEditor">${inputLabel}</label>
         <p class="runner-help">${inputHelp}</p>
         <textarea class="stdin-editor" id="stdinEditor" spellcheck="false" oninput="saveStdin(${ex.id}, this.value)" onkeydown="handleRunnerKeydown(event)">${escapeHTML(state.stdin)}</textarea>
         <div class="btn-row runner-buttons">
           <button class="btn btn-run" id="runBtn" onclick="runCurrentCode()">Run Code</button>
+          <button class="btn btn-clear" onclick="loadExerciseCodeIntoRunner()">Load Exercise Code</button>
           <button class="btn btn-clear" onclick="clearConsole()">Clear Output</button>
         </div>
       </section>
@@ -1115,10 +1141,19 @@ function getDefaultInput(ex) {
   return firstCase ? firstCase.inputs.join('\n') : '';
 }
 
+function getDefaultRunnerCode(ex) {
+  if (ex.type === 'code') {
+    return ex.starterCode || '';
+  }
+
+  return '# Type Python here, or click "Load Exercise Code"\n';
+}
+
 function getWorkState(ex) {
   if (!work[ex.id]) {
     work[ex.id] = {
       code: ex.starterCode || '',
+      runnerCode: getDefaultRunnerCode(ex),
       blanks: {},
       stdin: getDefaultInput(ex),
       console: ''
@@ -1126,6 +1161,7 @@ function getWorkState(ex) {
   }
 
   if (typeof work[ex.id].code !== 'string') work[ex.id].code = ex.starterCode || '';
+  if (typeof work[ex.id].runnerCode !== 'string') work[ex.id].runnerCode = getDefaultRunnerCode(ex);
   if (!work[ex.id].blanks) work[ex.id].blanks = {};
   if (typeof work[ex.id].stdin !== 'string') work[ex.id].stdin = getDefaultInput(ex);
   if (typeof work[ex.id].console !== 'string') work[ex.id].console = '';
@@ -1141,6 +1177,11 @@ function getWorkStateById(exId) {
 function saveCode(exId, value) {
   const state = getWorkStateById(exId);
   if (state) state.code = value;
+}
+
+function saveRunnerCode(exId, value) {
+  const state = getWorkStateById(exId);
+  if (state) state.runnerCode = value;
 }
 
 function saveBlank(exId, lineIndex, value) {
@@ -1169,6 +1210,11 @@ function handleEditorKeydown(event) {
 
   if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
     event.preventDefault();
+    if (event.target && event.target.id === 'codeEditor') {
+      saveRunnerCode(exercises[currentIndex].id, event.target.value);
+      const runnerEditor = document.getElementById('runnerCodeEditor');
+      if (runnerEditor) runnerEditor.value = event.target.value;
+    }
     runCurrentCode();
   }
 }
@@ -1191,6 +1237,18 @@ function buildExerciseCode(ex) {
   }
 
   return state.code;
+}
+
+function loadExerciseCodeIntoRunner() {
+  const ex = exercises[currentIndex];
+  const state = getWorkState(ex);
+  state.runnerCode = buildExerciseCode(ex);
+
+  const runnerEditor = document.getElementById('runnerCodeEditor');
+  if (runnerEditor) {
+    runnerEditor.value = state.runnerCode;
+    runnerEditor.focus();
+  }
 }
 
 function getConsolePlaceholder() {
@@ -1390,10 +1448,10 @@ async function runCurrentCode() {
 
   const ex = exercises[currentIndex];
   const state = getWorkState(ex);
-  const code = buildExerciseCode(ex);
+  const code = state.runnerCode;
 
-  if (ex.type === 'code' && (code.trim() === '' || code.trim() === (ex.starterCode || '').trim())) {
-    setConsoleOutput(ex.id, 'Write your code first, then run it here.');
+  if (code.trim() === '') {
+    setConsoleOutput(ex.id, 'Type some Python in the runner first, then click Run Code.');
     return;
   }
 
