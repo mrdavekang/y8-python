@@ -8,24 +8,25 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #242736;
-    --accent: #6c63ff;
-    --accent-light: #8b83ff;
-    --green: #4caf50;
-    --green-bg: #1b3a1b;
-    --red: #ef5350;
-    --red-bg: #3a1b1b;
-    --text: #e8e8f0;
-    --text-dim: #9a9ab0;
-    --border: #2e3145;
-    --code-bg: #12141c;
+    --bg: #f4f7fb;
+    --surface: #ffffff;
+    --surface2: #eef3fb;
+    --accent: #4f46e5;
+    --accent-light: #6366f1;
+    --green: #2e7d32;
+    --green-bg: #e8f5e9;
+    --red: #c62828;
+    --red-bg: #fdecea;
+    --text: #1f2937;
+    --text-dim: #64748b;
+    --border: #d8e1ef;
+    --code-bg: #f8fafc;
   }
 
   body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
+    background:
+      radial-gradient(circle at top left, #ffffff 0%, #f4f7fb 42%, #edf3fb 100%);
     color: var(--text);
     min-height: 100vh;
   }
@@ -205,7 +206,7 @@
     border-radius: 4px;
     font-family: 'Fira Code', 'Consolas', monospace;
     font-size: 13px;
-    color: #e8d44d;
+    color: #b45309;
   }
 
   /* ---- Code Editor Area ---- */
@@ -248,7 +249,7 @@
     background: var(--surface2);
     border: 2px solid var(--border);
     border-radius: 4px;
-    color: #fff;
+    color: var(--text);
     font-family: 'Fira Code', 'Consolas', monospace;
     font-size: 14px;
     padding: 2px 8px;
@@ -363,17 +364,17 @@
   }
   .runtime-status.loading,
   .runtime-status.running {
-    color: #90caf9;
+    color: #1565c0;
     border-color: #2196f3;
-    background: #15283d;
+    background: #e3f2fd;
   }
   .runtime-status.ready {
-    color: #81c784;
+    color: #2e7d32;
     border-color: var(--green);
     background: var(--green-bg);
   }
   .runtime-status.error {
-    color: #ef9a9a;
+    color: #c62828;
     border-color: var(--red);
     background: var(--red-bg);
   }
@@ -500,19 +501,19 @@
     display: block;
     background: var(--green-bg);
     border: 1px solid var(--green);
-    color: #81c784;
+    color: #2e7d32;
   }
   .feedback.error {
     display: block;
     background: var(--red-bg);
     border: 1px solid var(--red);
-    color: #ef9a9a;
+    color: #c62828;
   }
   .feedback.hint {
     display: block;
-    background: #1b2a3a;
+    background: #e3f2fd;
     border: 1px solid #2196f3;
-    color: #90caf9;
+    color: #1565c0;
   }
 
   /* ---- Completion Screen ---- */
