@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KS3 Python Practice — Print, Variables & Input (20 Questions)</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --surface: #f5f6fa;
+    --surface2: #e7e9f2;
+    --accent: #5a51e0;
+    --accent-light: #3d33c4;
+    --green: #2e7d32;
+    --green-bg: #e6f4ea;
+    --red: #c62828;
+    --red-bg: #fdecea;
+    --text: #1c1e26;
+    --text-dim: #5a5d6b;
+    --border: #d5d7e0;
+    --code-bg: #f3f4f9;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ---- Top Bar ---- */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar h1 {
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .topbar h1 span.icon { font-size: 22px; }
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-bar-outer {
+    width: 200px;
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    min-width: 90px;
+    text-align: right;
+  }
+  .score-badge {
+    background: var(--surface2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-light);
+  }
+
+  /* ---- Layout ---- */
+  .main-container {
+    display: flex;
+    height: calc(100vh - 53px);
+  }
+
+  /* ---- Sidebar ---- */
+  .sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px 0;
+  }
+  .sidebar h2 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-dim);
+    padding: 0 16px;
+    margin-bottom: 8px;
+  }
+  .topic-group { margin-bottom: 16px; }
+  .topic-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-light);
+    padding: 8px 16px 4px;
+    font-weight: 700;
+  }
+  .sidebar-item {
+    padding: 8px 16px 8px 28px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s;
+    color: var(--text-dim);
+  }
+  .sidebar-item:hover { background: var(--surface2); }
+  .sidebar-item.active {
+    background: var(--surface2);
+    color: var(--text);
+    font-weight: 600;
+  }
+  .sidebar-item .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .sidebar-item .status-dot.completed { background: var(--green); }
+  .sidebar-item .status-dot.wrong { background: var(--red); }
+
+  /* ---- Content ---- */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .exercise-header {
+    margin-bottom: 24px;
+  }
+  .exercise-header .tag {
+    display: inline-block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: var(--accent);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .exercise-header .tag.fill { background: #e67e22; }
+  .exercise-header .tag.code { background: var(--accent); }
+  .exercise-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .exercise-header p {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ---- Task Box ---- */
+  .task-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+  .task-box h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--accent-light);
+  }
+  .task-box p, .task-box ul {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-dim);
+  }
+  .task-box ul { padding-left: 20px; }
+  .task-box li { margin-bottom: 4px; }
+  .task-box code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    color: #b58900;
+  }
+
+  /* ---- Code Editor Area ---- */
+  .editor-area {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .editor-tab-bar {
+    background: var(--surface);
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .editor-tab-bar .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .editor-tab-bar .dot.r { background: #ff5f57; }
+  .editor-tab-bar .dot.y { background: #ffbd2e; }
+  .editor-tab-bar .dot.g { background: #28c840; }
+  .editor-tab-bar span { margin-left: 8px; }
+
+  /* Fill-in-the-blank editor */
+  .fill-editor {
+    padding: 20px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 2;
+    color: var(--text);
+  }
+  .fill-editor .code-line {
+    white-space: pre;
+    display: block;
+  }
+  .fill-editor input.blank {
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    color: #fff;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    padding: 2px 8px;
+    width: auto;
+    min-width: 80px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .fill-editor input.blank:focus {
+    border-color: var(--accent);
+  }
+  .fill-editor input.blank.correct {
+    border-color: var(--green);
+    background: var(--green-bg);
+  }
+  .fill-editor input.blank.wrong {
+    border-color: var(--red);
+    background: var(--red-bg);
+  }
+
+  /* Full code editor */
+  textarea.code-editor {
+    width: 100%;
+    min-height: 160px;
+    background: var(--code-bg);
+    color: var(--text);
+    border: none;
+    padding: 20px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    resize: vertical;
+    outline: none;
+    tab-size: 4;
+  }
+  textarea.stdin-editor {
+    width: 100%;
+    min-height: 120px;
+    background: var(--code-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+  }
+  textarea.stdin-editor:focus {
+    border-color: var(--accent);
+  }
+  textarea.runner-code-editor {
+    width: 100%;
+    min-height: 180px;
+    background: var(--code-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    tab-size: 4;
+    margin-bottom: 12px;
+  }
+  textarea.runner-code-editor:focus {
+    border-color: var(--accent);
+  }
+
+  /* ---- Python Runner ---- */
+  .runner-grid {
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .runner-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .runner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .runner-header h4 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+  }
+  .runtime-status {
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    background: var(--surface2);
+    white-space: nowrap;
+  }
+  .runtime-status.idle {
+    color: var(--text-dim);
+  }
+  .runtime-status.loading,
+  .runtime-status.running {
+    color: #0d47a1;
+    border-color: #2196f3;
+    background: #e3f2fd;
+  }
+  .runtime-status.ready {
+    color: #1b5e20;
+    border-color: var(--green);
+    background: var(--green-bg);
+  }
+  .runtime-status.error {
+    color: #b71c1c;
+    border-color: var(--red);
+    background: var(--red-bg);
+  }
+  .runner-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .runner-help {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .runner-buttons {
+    margin-top: 12px;
+  }
+  .runner-console {
+    min-height: 244px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    white-space: pre-wrap;
+    overflow: auto;
+  }
+  .runner-console.placeholder {
+    color: var(--text-dim);
+  }
+
+  /* ---- Expected Output ---- */
+  .expected-output {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .expected-output h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .expected-output pre {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    color: var(--green);
+    white-space: pre-wrap;
+  }
+
+  /* ---- Buttons ---- */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-check {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-check:hover { background: var(--accent-light); }
+  .btn-run {
+    background: #2196f3;
+    color: #fff;
+  }
+  .btn-run:hover { filter: brightness(1.07); }
+  .btn-next {
+    background: var(--green);
+    color: #fff;
+  }
+  .btn-next:hover { opacity: 0.9; }
+  .btn-prev {
+    background: var(--surface2);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .btn-prev:hover { background: var(--surface); }
+  .btn-hint {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    margin-left: auto;
+  }
+  .btn-hint:hover { border-color: var(--accent); color: var(--accent-light); }
+  .btn-clear {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .btn-clear:hover { border-color: var(--accent); color: var(--text); }
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* ---- Feedback ---- */
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: none;
+    white-space: pre-wrap;
+  }
+  .feedback.success {
+    display: block;
+    background: var(--green-bg);
+    border: 1px solid var(--green);
+    color: #1b5e20;
+  }
+  .feedback.error {
+    display: block;
+    background: var(--red-bg);
+    border: 1px solid var(--red);
+    color: #b71c1c;
+  }
+  .feedback.hint {
+    display: block;
+    background: #e3f2fd;
+    border: 1px solid #2196f3;
+    color: #0d47a1;
+  }
+
+  /* ---- Completion Screen ---- */
+  .completion-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex: 1;
+    padding: 40px;
+  }
+  .completion-screen.show { display: flex; }
+  .completion-screen .trophy { font-size: 64px; margin-bottom: 20px; }
+  .completion-screen h2 { font-size: 28px; margin-bottom: 12px; }
+  .completion-screen p { color: var(--text-dim); font-size: 16px; margin-bottom: 8px; }
+  .completion-screen .final-score {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--accent-light);
+    margin: 20px 0;
+  }
+  .btn-restart {
+    background: var(--accent);
+    color: #fff;
+    margin-top: 20px;
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 800px) {
+    .sidebar { display: none; }
+    .content { padding: 20px 16px; }
+    .progress-bar-outer { width: 120px; }
+  }
+  @media (max-width: 980px) {
+    .runner-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <h1><span class="icon">&#128013;</span> KS3 Python Practice</h1>
+  <div class="progress-wrap">
+    <div class="score-badge" id="scoreBadge">Score: 0 / 0</div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+    <div class="progress-text" id="progressText">0 / 18</div>
+  </div>
+</div>
+
+<div class="main-container">
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <!-- Main Content -->
+  <main class="content" id="mainContent">
+    <!-- Exercise content rendered by JS -->
+  </main>
+</div>
+
+<script>
+// ===================== EXERCISE DATA =====================
+const exercises = [
+  // ---- TOPIC 1: PRINT ----
+  {
+    id: 1, topic: "Print", type: "fill",
+    title: "Hello World!",
+    description: "Every Python journey starts here. The <code>print()</code> function displays text on the screen. Complete the classic first program!",
+    lines: [
+      { before: '', blank: 'print', after: '("Hello World!")' }
+    ],
+    hint: "The function that displays output is called print.",
+    expectedOutput: "Hello World!"
+  },
+  {
+    id: 2, topic: "Print", type: "fill",
+    title: "Speak to the Class",
+    description: "Fill in the blank so the program prints the exact message <code>I love coding</code>.",
+    lines: [
+      { before: 'print("', blank: 'I love coding', after: '")' }
+    ],
+    hint: "Whatever goes between the quotation marks will be printed.",
+    expectedOutput: "I love coding"
+  },
+  {
+    id: 3, topic: "Print", type: "fill",
+    title: "Printing a Number",
+    description: "You can print numbers too. Numbers do <strong>not</strong> need quotes around them. Print the number <code>42</code>.",
+    lines: [
+      { before: 'print(', blank: '42', after: ')' }
+    ],
+    hint: "Place the number directly inside the brackets, with no quotes.",
+    expectedOutput: "42"
+  },
+  {
+    id: 4, topic: "Print", type: "fill",
+    title: "Two Items with a Comma",
+    description: "You can print several things at once by separating them with commas. Python automatically adds a space between them.",
+    lines: [
+      { before: 'print("Good", ', blank: '"morning"', after: ')' }
+    ],
+    hint: 'Add a second piece of text (in quotes) so the output reads "Good morning".',
+    expectedOutput: "Good morning"
+  },
+  {
+    id: 5, topic: "Print", type: "code",
+    title: "Two Lines",
+    description: "Write code that prints <code>Line one</code> on the first line and <code>Line two</code> on the second line. Use <strong>two</strong> separate print statements.",
+    starterCode: '# Use two print() statements\n',
+    checks: [
+      { type: "output_match", value: 'Line one\nLine two' }
+    ],
+    hint: "Each print() call produces one line of output.",
+    expectedOutput: "Line one\nLine two"
+  },
+  {
+    id: 6, topic: "Print", type: "code",
+    title: "Shopping List",
+    description: "Print a shopping list with three items, one per line:<br><code>Apples</code><br><code>Bread</code><br><code>Milk</code>",
+    starterCode: '# Print the three shopping list items on separate lines\n',
+    checks: [
+      { type: "output_match", value: 'Apples\nBread\nMilk' }
+    ],
+    hint: "Use three print() statements in order.",
+    expectedOutput: "Apples\nBread\nMilk"
+  },
+  {
+    id: 7, topic: "Print", type: "code",
+    title: "Your Own Poem",
+    description: "Write a short two-line message. Print <code>Python is fun</code> then <code>Let's code!</code> on separate lines.",
+    starterCode: '# Write the two lines below\n',
+    checks: [
+      { type: "output_match", value: "Python is fun\nLet's code!" }
+    ],
+    hint: "Remember: each line needs its own print statement.",
+    expectedOutput: "Python is fun\nLet's code!"
+  },
+
+  // ---- TOPIC 2: VARIABLES ----
+  {
+    id: 8, topic: "Variables", type: "fill",
+    title: "Storing a Name",
+    description: "A <strong>variable</strong> is like a labelled box that stores a value. Complete the code to store <code>\"Alice\"</code> in a variable called <code>name</code>.",
+    lines: [
+      { before: '', blank: 'name', after: ' = "Alice"' },
+      { before: 'print(', blank: 'name', after: ')' }
+    ],
+    hint: "A variable is created by writing its name, then = , then the value.",
+    expectedOutput: "Alice"
+  },
+  {
+    id: 9, topic: "Variables", type: "fill",
+    title: "Storing an Age",
+    description: "Store the number <code>13</code> in a variable called <code>age</code>, then print it. Numbers don't need quotes.",
+    lines: [
+      { before: 'age = ', blank: '13', after: '' },
+      { before: 'print(', blank: 'age', after: ')' }
+    ],
+    hint: "Numbers go straight after the equals sign with no quotes.",
+    expectedOutput: "13"
+  },
+  {
+    id: 10, topic: "Variables", type: "fill",
+    title: "Printing a Message with a Variable",
+    description: "You can mix text and variables using commas inside <code>print()</code>. Fill in the blanks so it prints <code>Hello, Bob</code>.",
+    lines: [
+      { before: 'name = "Bob"', blank: '', after: '' },
+      { before: 'print("Hello,", ', blank: 'name', after: ')' }
+    ],
+    hint: "Put the variable name (without quotes) after the comma inside print().",
+    expectedOutput: "Hello, Bob"
+  },
+  {
+    id: 11, topic: "Variables", type: "fill",
+    title: "Two Variables",
+    description: "Create a variable <code>subject</code> storing <code>\"Maths\"</code> and a variable <code>score</code> storing <code>9</code>. Then print both on the same line.",
+    lines: [
+      { before: 'subject = ', blank: '"Maths"', after: '' },
+      { before: 'score = ', blank: '9', after: '' },
+      { before: 'print(subject, ', blank: 'score', after: ')' }
+    ],
+    hint: "Text needs quotes; numbers do not. Use a comma to print both.",
+    expectedOutput: "Maths 9"
+  },
+  {
+    id: 12, topic: "Variables", type: "code",
+    title: "Create and Print",
+    description: "Create a variable <code>subject</code> with the value <code>\"Computing\"</code> and a variable <code>room</code> with the value <code>12</code>. Print each on its own line.",
+    starterCode: '# Create the two variables, then print them on separate lines\n',
+    checks: [
+      { type: "contains", value: 'subject', msg: "You need a variable called subject" },
+      { type: "contains", value: '"Computing"', msg: "subject should store \"Computing\"" },
+      { type: "contains", value: 'room', msg: "You need a variable called room" },
+      { type: "contains", value: '12', msg: "room should store 12" },
+      { type: "output_match", value: 'Computing\n12' }
+    ],
+    hint: "Two lines of the form variable = value, then two print() calls.",
+    expectedOutput: "Computing\n12"
+  },
+  {
+    id: 13, topic: "Variables", type: "fill",
+    title: "Changing a Variable",
+    description: "A variable can be changed! First <code>score</code> is 5, then we change it to 10. Fill in the second blank so the final printed value is 10.",
+    lines: [
+      { before: 'score = 5', blank: '', after: '' },
+      { before: 'score = ', blank: '10', after: '' },
+      { before: 'print(', blank: 'score', after: ')' }
+    ],
+    hint: "Assigning a new value replaces the old one.",
+    expectedOutput: "10"
+  },
+
+  // ---- TOPIC 3: INPUT ----
+  {
+    id: 14, topic: "Input", type: "fill",
+    title: "Asking for a Name",
+    description: "<code>input()</code> asks the user to type something. Complete the code to ask for the user's name and store it.",
+    lines: [
+      { before: 'name = ', blank: 'input', after: '("What is your name? ")' },
+      { before: 'print("Hello,", ', blank: 'name', after: ')' }
+    ],
+    hint: "The function that reads user input is called input.",
+    expectedOutput: "What is your name? \nHello, [your name]"
+  },
+  {
+    id: 15, topic: "Input", type: "fill",
+    title: "Favourite Colour",
+    description: "Complete the code so it asks for a colour and prints a short message.",
+    lines: [
+      { before: '', blank: 'colour', after: ' = input("What is your favourite colour? ")' },
+      { before: 'print("Nice!", ', blank: 'colour', after: ', "is a great colour!")' }
+    ],
+    hint: "Store the result of input() in a variable called colour, then print it with commas.",
+    expectedOutput: "What is your favourite colour? \nNice! [colour] is a great colour!"
+  },
+  {
+    id: 16, topic: "Input", type: "fill",
+    title: "Favourite Food",
+    description: "Ask the user for their favourite food and greet them.",
+    lines: [
+      { before: 'food = ', blank: 'input', after: '("What is your favourite food? ")' },
+      { before: 'print("Yum!", ', blank: 'food', after: ', "is delicious!")' }
+    ],
+    hint: "Follow the same pattern as before: input() stores a value, print() shows it.",
+    expectedOutput: "What is your favourite food? \nYum! [food] is delicious!"
+  },
+  {
+    id: 17, topic: "Input", type: "code",
+    title: "Ask and Greet",
+    description: "Write a program that asks <code>\"What is your hobby? \"</code> and stores the answer in a variable called <code>hobby</code>. Then print <code>\"Cool! You like\"</code> followed by the hobby.",
+    starterCode: '# Ask for the hobby and print the message\n',
+    checks: [
+      { type: "contains", value: 'input', msg: "Use input() to ask the user" },
+      { type: "contains", value: 'hobby', msg: "Store the answer in a variable called hobby" },
+      { type: "contains", value: '"What is your hobby? "', msg: 'The prompt should be exactly "What is your hobby? "' },
+      { type: "contains", value: 'print', msg: "Use print() to display the output" },
+      { type: "contains", value: 'Cool! You like', msg: 'Your print should include the text "Cool! You like"' }
+    ],
+    hint: 'Use: hobby = input("What is your hobby? ") then print("Cool! You like", hobby)',
+    expectedOutput: 'What is your hobby? \nCool! You like [hobby]'
+  },
+  {
+    id: 18, topic: "Input", type: "code",
+    title: "Name and Age",
+    description: "Ask the user two questions:<br>1) <code>\"What is your name? \"</code> — store in a variable called <code>name</code>.<br>2) <code>\"How old are you? \"</code> — store in a variable called <code>age</code>.<br>Then print: <code>Hi</code>, the name, <code>you are</code>, the age. (Use commas inside print.)",
+    starterCode: '# Ask for name and age, then greet the user\n',
+    checks: [
+      { type: "contains", value: 'name', msg: "Use a variable called name" },
+      { type: "contains", value: 'age', msg: "Use a variable called age" },
+      { type: "contains", value: '"What is your name? "', msg: 'Use the exact prompt "What is your name? "' },
+      { type: "contains", value: '"How old are you? "', msg: 'Use the exact prompt "How old are you? "' },
+      { type: "contains", value: 'Hi', msg: 'Your message should start with "Hi"' },
+      { type: "contains", value: 'you are', msg: 'Your message should include "you are"' }
+    ],
+    hint: 'name = input("What is your name? ")  then  age = input("How old are you? ")  then print("Hi", name, "you are", age)',
+    expectedOutput: 'What is your name? \nHow old are you? \nHi [name] you are [age]'
+  },
+  {
+    id: 19, topic: "Input", type: "code",
+    title: "Personal Greeting",
+    description: "Ask the user for their <code>name</code> using the prompt <code>\"Name: \"</code> and their <code>town</code> using the prompt <code>\"Town: \"</code>. Then print a single message: <code>Welcome</code>, the name, <code>from</code>, the town.",
+    starterCode: '# Build your personal greeting program\n',
+    checks: [
+      { type: "contains", value: 'input', msg: "Use input() to ask for values" },
+      { type: "contains", value: '"Name: "', msg: 'Use the exact prompt "Name: "' },
+      { type: "contains", value: '"Town: "', msg: 'Use the exact prompt "Town: "' },
+      { type: "contains", value: 'Welcome', msg: 'Your output should include "Welcome"' },
+      { type: "contains", value: 'from', msg: 'Your output should include the word "from"' }
+    ],
+    hint: 'name = input("Name: ")   town = input("Town: ")   print("Welcome", name, "from", town)',
+    expectedOutput: 'Name: \nTown: \nWelcome [name] from [town]'
+  },
+  {
+    id: 20, topic: "Input", type: "code",
+    title: "Final Challenge: Mini Interview",
+    description: "Write a short interview program. Ask three questions using the exact prompts:<br>1) <code>\"What is your name? \"</code><br>2) <code>\"What is your favourite subject? \"</code><br>3) <code>\"What is your dream job? \"</code><br>Then print a summary: the name, followed by <code>loves</code>, the subject, followed by <code>and wants to be a</code>, the dream job. Use one print statement with commas.",
+    starterCode: '# Ask three questions and print the summary line\n',
+    checks: [
+      { type: "contains", value: '"What is your name? "', msg: 'Use the exact prompt "What is your name? "' },
+      { type: "contains", value: '"What is your favourite subject? "', msg: 'Use the exact prompt "What is your favourite subject? "' },
+      { type: "contains", value: '"What is your dream job? "', msg: 'Use the exact prompt "What is your dream job? "' },
+      { type: "contains", value: 'loves', msg: 'Include the word "loves" in the summary' },
+      { type: "contains", value: 'and wants to be a', msg: 'Include "and wants to be a" in the summary' },
+      { type: "contains", value: 'print', msg: "Don't forget to print the summary" }
+    ],
+    hint: 'Store each answer in a variable, then print(name, "loves", subject, "and wants to be a", job)',
+    expectedOutput: 'What is your name? \nWhat is your favourite subject? \nWhat is your dream job? \n[name] loves [subject] and wants to be a [job]'
+  }
+];
+
+const runtimeCasesById = {
+  1: [{ inputs: [], expected: 'Hello World!' }],
+  2: [{ inputs: [], expected: 'I love coding' }],
+  3: [{ inputs: [], expected: '42' }],
+  4: [{ inputs: [], expected: 'Good morning' }],
+  5: [{ inputs: [], expected: 'Line one\nLine two' }],
+  6: [{ inputs: [], expected: 'Apples\nBread\nMilk' }],
+  7: [{ inputs: [], expected: "Python is fun\nLet's code!" }],
+  8: [{ inputs: [], expected: 'Alice' }],
+  9: [{ inputs: [], expected: '13' }],
+  10: [{ inputs: [], expected: 'Hello, Bob' }],
+  11: [{ inputs: [], expected: 'Maths 9' }],
+  12: [{ inputs: [], expected: 'Computing\n12' }],
+  13: [{ inputs: [], expected: '10' }],
+  14: [{ inputs: ['Maya'], expected: 'What is your name? Maya\nHello, Maya' }],
+  15: [{ inputs: ['blue'], expected: 'What is your favourite colour? blue\nNice! blue is a great colour!' }],
+  16: [{ inputs: ['pizza'], expected: 'What is your favourite food? pizza\nYum! pizza is delicious!' }],
+  17: [{ inputs: ['drawing'], expected: 'What is your hobby? drawing\nCool! You like drawing' }],
+  18: [
+    { inputs: ['Sam', '13'], expected: 'What is your name? Sam\nHow old are you? 13\nHi Sam you are 13' },
+    { inputs: ['Ada', '11'], expected: 'What is your name? Ada\nHow old are you? 11\nHi Ada you are 11' }
+  ],
+  19: [
+    { inputs: ['Mia', 'London'], expected: 'Name: Mia\nTown: London\nWelcome Mia from London' }
+  ],
+  20: [
+    { inputs: ['Leo', 'Science', 'scientist'], expected: 'What is your name? Leo\nWhat is your favourite subject? Science\nWhat is your dream job? scientist\nLeo loves Science and wants to be a scientist' }
+  ]
+};
+
+exercises.forEach(ex => {
+  ex.runCases = runtimeCasesById[ex.id] || [];
+});
+
+// ===================== STATE =====================
+let currentIndex = 0;
+let completed = {};  // { exerciseId: true/false }
+let attempts = {};   // { exerciseId: number }
+let work = {};       // { exerciseId: { code, blanks, stdin, console } }
+let pyodidePromise = null;
+let pyodideReady = false;
+let pyodideLoading = false;
+let pyodideError = '';
+let runnerBusy = false;
+let activeRuntimeSession = null;
+
+const PYODIDE_BASE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.22.0/full/';
+const PYTHON_RUNNER_WRAPPER = String.raw`
+import builtins
+import js
+import sys
+import traceback
+
+def __browser_input(prompt=""):
+    return js.pyInput(str(prompt))
+
+class __BrowserWriter:
+    def write(self, data):
+        if data is not None and data != "":
+            js.pyWrite(str(data))
+    def flush(self):
+        pass
+
+builtins.input = __browser_input
+sys.stdout = __BrowserWriter()
+sys.stderr = __BrowserWriter()
+
+try:
+    exec(js.__studentCode, {"__name__": "__main__"})
+except Exception:
+    js.pyMarkError()
+    traceback.print_exc()
+`;
+
+// ===================== RENDER SIDEBAR =====================
+function renderSidebar() {
+  const sb = document.getElementById('sidebar');
+  let html = '<h2>Exercises</h2>';
+  let currentTopic = '';
+
+  exercises.forEach((ex, i) => {
+    if (ex.topic !== currentTopic) {
+      currentTopic = ex.topic;
+      html += `<div class="topic-group"><div class="topic-label">${currentTopic}</div>`;
+    }
+    const statusClass = completed[ex.id] === true ? 'completed' : completed[ex.id] === false ? 'wrong' : '';
+    const activeClass = i === currentIndex ? 'active' : '';
+    html += `<div class="sidebar-item ${activeClass}" onclick="goTo(${i})">
+      <span class="status-dot ${statusClass}"></span>
+      ${ex.id}. ${ex.title}
+    </div>`;
+    // close topic group at end or topic change
+    if (i === exercises.length - 1 || exercises[i + 1].topic !== currentTopic) {
+      html += '</div>';
+    }
+  });
+
+  sb.innerHTML = html;
+}
+
+// ===================== RENDER EXERCISE =====================
+function renderExercise() {
+  const ex = exercises[currentIndex];
+  const state = getWorkState(ex);
+  const main = document.getElementById('mainContent');
+
+  const typeTag = ex.type === 'fill' ? '<span class="tag fill">Fill in the Blanks</span>' : '<span class="tag code">Write Code</span>';
+
+  let editorHTML = '';
+  if (ex.type === 'fill') {
+    let linesHTML = '';
+    ex.lines.forEach((line, li) => {
+      if (line.blank === '') {
+        // Non-editable line
+        linesHTML += `<span class="code-line">${escapeHTML(line.before)}${escapeHTML(line.after)}</span>`;
+      } else {
+        const w = Math.max(line.blank.length * 10 + 20, 80);
+        const savedValue = state.blanks[li] || '';
+        linesHTML += `<span class="code-line">${escapeHTML(line.before)}<input class="blank" data-line="${li}" data-answer="${escapeAttr(line.blank)}" style="width:${w}px" value="${escapeAttr(savedValue)}" spellcheck="false" autocomplete="off" oninput="saveBlank(${ex.id}, ${li}, this.value)">${escapeHTML(line.after)}</span>`;
+      }
+    });
+    editorHTML = `<div class="fill-editor">${linesHTML}</div>`;
+  } else {
+    editorHTML = `<textarea class="code-editor" id="codeEditor" spellcheck="false" oninput="saveCode(${ex.id}, this.value)" onkeydown="handleEditorKeydown(event)">${escapeHTML(state.code)}</textarea>`;
+  }
+
+  let expectedHTML = '';
+  if (ex.expectedOutput) {
+    expectedHTML = `<div class="expected-output">
+      <h4>Expected Output</h4>
+      <pre>${escapeHTML(ex.expectedOutput)}</pre>
+    </div>`;
+  }
+
+  const defaultRunCase = ex.runCases[0];
+  const inputLabel = defaultRunCase && defaultRunCase.inputs.length ? 'Program Input' : 'Program Input (optional)';
+  const inputHelp = defaultRunCase && defaultRunCase.inputs.length
+    ? 'Suggested input is prefilled below. Use one line per input() call, just like pressing Enter in IDLE.'
+    : 'This exercise does not need input, but you can still experiment here if you want.';
+  const runnerHelp = ex.type === 'fill'
+    ? 'This runner is a separate editable Python sandbox. Type code here, or load the current exercise code into it.'
+    : 'This runner is a separate editable Python sandbox. Type code here, or load your current answer into it.';
+  const consoleText = state.console || 'Run your code to see the Python output here.';
+  const runtimeState = getRuntimeState();
+  const runnerHTML = `
+    <div class="runner-grid">
+      <section class="runner-panel">
+        <div class="runner-header">
+          <h4>Python Runner</h4>
+          <span class="runtime-status ${runtimeState.className}" id="runtimeStatus">${runtimeState.label}</span>
+        </div>
+        <label class="runner-label" for="runnerCodeEditor">Python Code</label>
+        <p class="runner-help">${runnerHelp}</p>
+        <textarea class="runner-code-editor" id="runnerCodeEditor" spellcheck="false" oninput="saveRunnerCode(${ex.id}, this.value)" onkeydown="handleEditorKeydown(event)">${escapeHTML(state.runnerCode)}</textarea>
+        <label class="runner-label" for="stdinEditor">${inputLabel}</label>
+        <p class="runner-help">${inputHelp}</p>
+        <textarea class="stdin-editor" id="stdinEditor" spellcheck="false" oninput="saveStdin(${ex.id}, this.value)" onkeydown="handleRunnerKeydown(event)">${escapeHTML(state.stdin)}</textarea>
+        <div class="btn-row runner-buttons">
+          <button class="btn btn-run" id="runBtn" onclick="runCurrentCode()">Run Code</button>
+          <button class="btn btn-clear" onclick="loadExerciseCodeIntoRunner()">Load Exercise Code</button>
+          <button class="btn btn-clear" onclick="clearConsole()">Clear Output</button>
+        </div>
+      </section>
+
+      <section class="runner-panel">
+        <div class="runner-header">
+          <h4>Console Output</h4>
+        </div>
+        <pre class="runner-console${state.console ? '' : ' placeholder'}" id="runnerConsole">${escapeHTML(consoleText)}</pre>
+      </section>
+    </div>
+  `;
+
+  main.innerHTML = `
+    <div class="exercise-content">
+      <div class="exercise-header">
+        ${typeTag}
+        <h2>Exercise ${ex.id}: ${ex.title}</h2>
+        <p>${ex.description}</p>
+      </div>
+
+      <div class="task-box">
+        <h3>Your Task</h3>
+        <p>${ex.type === 'fill' ? 'Fill in the blanks to complete the code below.' : 'Write the complete code in the editor below.'}</p>
+      </div>
+
+      <div class="editor-area">
+        <div class="editor-tab-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span>exercise_${ex.id}.py</span>
+        </div>
+        ${editorHTML}
+      </div>
+
+      ${expectedHTML}
+      ${runnerHTML}
+
+      <div class="btn-row">
+        <button class="btn btn-prev" onclick="prev()" ${currentIndex === 0 ? 'disabled' : ''}>Previous</button>
+        <button class="btn btn-check" onclick="checkAnswer()">Check Answer</button>
+        <button class="btn btn-next" onclick="next()" id="nextBtn">${currentIndex === exercises.length - 1 ? 'Finish' : 'Next'}</button>
+        <button class="btn btn-hint" onclick="showHint()">Hint</button>
+      </div>
+
+      <div class="feedback" id="feedback"></div>
+    </div>
+  `;
+
+  // Focus first blank or editor
+  requestAnimationFrame(() => {
+    const firstBlank = main.querySelector('input.blank');
+    const editor = document.getElementById('codeEditor');
+    if (firstBlank) firstBlank.focus();
+    else if (editor) editor.focus();
+  });
+
+  renderSidebar();
+  updateProgress();
+  syncRuntimeControls();
+}
+
+// ===================== CHECK ANSWER =====================
+async function checkAnswer() {
+  const ex = exercises[currentIndex];
+  const fb = document.getElementById('feedback');
+
+  if (ex.type === 'fill') {
+    const blanks = document.querySelectorAll('input.blank');
+    let allCorrect = true;
+    blanks.forEach(b => {
+      const answer = b.dataset.answer.trim().toLowerCase();
+      const userVal = b.value.trim().toLowerCase();
+      if (userVal === answer) {
+        b.classList.remove('wrong');
+        b.classList.add('correct');
+      } else {
+        b.classList.remove('correct');
+        b.classList.add('wrong');
+        allCorrect = false;
+      }
+    });
+
+    if (allCorrect) {
+      completed[ex.id] = true;
+      fb.className = 'feedback success';
+      fb.textContent = 'Correct! Well done!';
+    } else {
+      completed[ex.id] = false;
+      fb.className = 'feedback error';
+      fb.textContent = 'Not quite right. Check the highlighted blanks and try again.';
+    }
+  } else {
+    // Code type
+    const editor = document.getElementById('codeEditor');
+    const code = editor.value;
+
+    if (code.trim() === '' || code.trim() === (ex.starterCode || '').trim()) {
+      fb.className = 'feedback error';
+      fb.textContent = 'Write your code first, then check!';
+      return;
+    }
+
+    const containsFailure = findContainsFailure(ex, code);
+    if (containsFailure) {
+      completed[ex.id] = false;
+      fb.className = 'feedback error';
+      fb.textContent = containsFailure;
+    } else {
+      runnerBusy = true;
+      syncRuntimeControls();
+
+      try {
+        const runtimeResult = await runExerciseCases(ex, code);
+        if (runtimeResult.ok) {
+          completed[ex.id] = true;
+          fb.className = 'feedback success';
+          fb.textContent = 'Correct! Your code passed the Python checks.';
+        } else {
+          completed[ex.id] = false;
+          fb.className = 'feedback error';
+          fb.textContent = runtimeResult.message;
+        }
+      } catch (error) {
+        completed[ex.id] = false;
+        fb.className = 'feedback error';
+        fb.textContent = `The Python runner could not start: ${error.message || error}`;
+      } finally {
+        runnerBusy = false;
+        syncRuntimeControls();
+      }
+    }
+
+    if (completed[ex.id]) {
+      completed[ex.id] = true;
+      fb.className = 'feedback success';
+      fb.textContent = fb.textContent || 'Correct! Well done!';
+    }
+  }
+
+  renderSidebar();
+  updateProgress();
+}
+
+function getDefaultInput(ex) {
+  const firstCase = ex.runCases && ex.runCases[0];
+  return firstCase ? firstCase.inputs.join('\n') : '';
+}
+
+function getDefaultRunnerCode(ex) {
+  if (ex.type === 'code') {
+    return ex.starterCode || '';
+  }
+
+  return '# Type Python here, or click "Load Exercise Code"\n';
+}
+
+function getWorkState(ex) {
+  if (!work[ex.id]) {
+    work[ex.id] = {
+      code: ex.starterCode || '',
+      runnerCode: getDefaultRunnerCode(ex),
+      blanks: {},
+      stdin: getDefaultInput(ex),
+      console: ''
+    };
+  }
+
+  if (typeof work[ex.id].code !== 'string') work[ex.id].code = ex.starterCode || '';
+  if (typeof work[ex.id].runnerCode !== 'string') work[ex.id].runnerCode = getDefaultRunnerCode(ex);
+  if (!work[ex.id].blanks) work[ex.id].blanks = {};
+  if (typeof work[ex.id].stdin !== 'string') work[ex.id].stdin = getDefaultInput(ex);
+  if (typeof work[ex.id].console !== 'string') work[ex.id].console = '';
+
+  return work[ex.id];
+}
+
+function getWorkStateById(exId) {
+  const exercise = exercises.find(ex => ex.id === Number(exId));
+  return exercise ? getWorkState(exercise) : null;
+}
+
+function saveCode(exId, value) {
+  const state = getWorkStateById(exId);
+  if (state) state.code = value;
+}
+
+function saveRunnerCode(exId, value) {
+  const state = getWorkStateById(exId);
+  if (state) state.runnerCode = value;
+}
+
+function saveBlank(exId, lineIndex, value) {
+  const state = getWorkStateById(exId);
+  if (state) state.blanks[lineIndex] = value;
+}
+
+function saveStdin(exId, value) {
+  const state = getWorkStateById(exId);
+  if (state) state.stdin = value;
+}
+
+function insertTextAtCursor(field, text) {
+  const start = field.selectionStart;
+  const end = field.selectionEnd;
+  field.setRangeText(text, start, end, 'end');
+  field.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function handleEditorKeydown(event) {
+  if (event.key === 'Tab') {
+    event.preventDefault();
+    insertTextAtCursor(event.target, '    ');
+    return;
+  }
+
+  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+    event.preventDefault();
+    if (event.target && event.target.id === 'codeEditor') {
+      saveRunnerCode(exercises[currentIndex].id, event.target.value);
+      const runnerEditor = document.getElementById('runnerCodeEditor');
+      if (runnerEditor) runnerEditor.value = event.target.value;
+    }
+    runCurrentCode();
+  }
+}
+
+function handleRunnerKeydown(event) {
+  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+    event.preventDefault();
+    runCurrentCode();
+  }
+}
+
+function buildExerciseCode(ex) {
+  const state = getWorkState(ex);
+
+  if (ex.type === 'fill') {
+    return ex.lines.map((line, index) => {
+      const filled = line.blank === '' ? '' : (state.blanks[index] || '');
+      return `${line.before}${filled}${line.after}`;
+    }).join('\n');
+  }
+
+  return state.code;
+}
+
+function loadExerciseCodeIntoRunner() {
+  const ex = exercises[currentIndex];
+  const state = getWorkState(ex);
+  state.runnerCode = buildExerciseCode(ex);
+
+  const runnerEditor = document.getElementById('runnerCodeEditor');
+  if (runnerEditor) {
+    runnerEditor.value = state.runnerCode;
+    runnerEditor.focus();
+  }
+}
+
+function getConsolePlaceholder() {
+  return 'Run your code to see the Python output here.';
+}
+
+function setConsoleOutput(exId, text) {
+  const state = getWorkStateById(exId);
+  if (!state) return;
+
+  state.console = text;
+
+  const currentExercise = exercises[currentIndex];
+  if (!currentExercise || currentExercise.id !== Number(exId)) return;
+
+  const consoleEl = document.getElementById('runnerConsole');
+  if (!consoleEl) return;
+
+  consoleEl.textContent = text || getConsolePlaceholder();
+  consoleEl.classList.toggle('placeholder', !text);
+}
+
+function clearConsole() {
+  const ex = exercises[currentIndex];
+  setConsoleOutput(ex.id, '');
+}
+
+function normalizeConsoleText(text) {
+  return (text || '')
+    .replace(/\r/g, '')
+    .split('\n')
+    .map(line => line.replace(/\s+$/g, ''))
+    .join('\n')
+    .trim();
+}
+
+function getRuntimeState() {
+  if (pyodideError) return { label: 'Unavailable', className: 'error' };
+  if (runnerBusy) return { label: 'Running...', className: 'running' };
+  if (pyodideLoading) return { label: 'Loading Python...', className: 'loading' };
+  if (pyodideReady) return { label: 'Ready', className: 'ready' };
+  return { label: 'Load on first run', className: 'idle' };
+}
+
+function syncRuntimeControls() {
+  const state = getRuntimeState();
+  const statusEl = document.getElementById('runtimeStatus');
+  const runBtn = document.getElementById('runBtn');
+  const checkBtn = document.querySelector('.btn-check');
+
+  if (statusEl) {
+    statusEl.className = `runtime-status ${state.className}`;
+    statusEl.textContent = state.label;
+  }
+
+  if (runBtn) {
+    runBtn.disabled = runnerBusy || pyodideLoading || Boolean(pyodideError);
+  }
+
+  if (checkBtn) {
+    checkBtn.disabled = runnerBusy;
+  }
+}
+
+async function loadPyodideScript() {
+  if (typeof window.loadPyodide === 'function') return;
+
+  await new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-pyodide="true"]');
+
+    if (existing) {
+      existing.addEventListener('load', resolve, { once: true });
+      existing.addEventListener('error', () => reject(new Error('Could not load Pyodide.')), { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `${PYODIDE_BASE_URL}pyodide.js`;
+    script.async = true;
+    script.dataset.pyodide = 'true';
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('Could not load Pyodide from the CDN.'));
+    document.head.appendChild(script);
+  });
+}
+
+async function ensurePyodide() {
+  if (pyodideReady && pyodidePromise) {
+    return pyodidePromise;
+  }
+
+  if (!pyodidePromise) {
+    pyodideLoading = true;
+    pyodideError = '';
+    syncRuntimeControls();
+
+    pyodidePromise = (async () => {
+      await loadPyodideScript();
+      const runtime = await window.loadPyodide({ indexURL: PYODIDE_BASE_URL });
+      pyodideReady = true;
+      return runtime;
+    })().catch(error => {
+      pyodidePromise = null;
+      pyodideReady = false;
+      pyodideError = error.message || 'Could not start the Python runner.';
+      throw error;
+    }).finally(() => {
+      pyodideLoading = false;
+      syncRuntimeControls();
+    });
+  }
+
+  return pyodidePromise;
+}
+
+function createRuntimeSession(exId, inputLines, showInConsole) {
+  const session = {
+    exId: Number(exId),
+    inputQueue: [...(inputLines || [])],
+    inputIndex: 0,
+    output: '',
+    missingInput: false,
+    hadError: false,
+    showInConsole,
+    write(chunk) {
+      if (!chunk) return;
+      this.output += chunk;
+      if (this.showInConsole) {
+        setConsoleOutput(this.exId, this.output);
+      }
+    },
+    read(prompt = '') {
+      if (prompt) this.write(prompt);
+
+      const nextValue = this.inputQueue[this.inputIndex];
+      if (typeof nextValue === 'undefined') {
+        this.missingInput = true;
+        this.write('[No more input provided]\n');
+        return '';
+      }
+
+      this.inputIndex += 1;
+      this.write(`${nextValue}\n`);
+      return nextValue;
+    },
+    markError() {
+      this.hadError = true;
+    }
+  };
+
+  if (showInConsole) {
+    setConsoleOutput(exId, '');
+  }
+
+  return session;
+}
+
+window.pyWrite = function(chunk) {
+  if (activeRuntimeSession) activeRuntimeSession.write(chunk);
+};
+
+window.pyInput = function(prompt) {
+  return activeRuntimeSession ? activeRuntimeSession.read(prompt || '') : '';
+};
+
+window.pyMarkError = function() {
+  if (activeRuntimeSession) activeRuntimeSession.markError();
+};
+
+async function executePython(code, inputLines, options = {}) {
+  const pyodide = await ensurePyodide();
+  const session = createRuntimeSession(options.exerciseId, inputLines, Boolean(options.showInConsole));
+
+  activeRuntimeSession = session;
+  window.__studentCode = code;
+
+  try {
+    await pyodide.runPythonAsync(PYTHON_RUNNER_WRAPPER);
+  } catch (error) {
+    session.hadError = true;
+    session.write(`Runner error: ${error.message || error}\n`);
+  } finally {
+    activeRuntimeSession = null;
+    delete window.__studentCode;
+  }
+
+  return {
+    ok: !session.hadError && !session.missingInput,
+    output: session.output,
+    hadError: session.hadError,
+    missingInput: session.missingInput
+  };
+}
+
+async function runCurrentCode() {
+  if (runnerBusy) return;
+
+  const ex = exercises[currentIndex];
+  const state = getWorkState(ex);
+  const code = state.runnerCode;
+
+  if (code.trim() === '') {
+    setConsoleOutput(ex.id, 'Type some Python in the runner first, then click Run Code.');
+    return;
+  }
+
+  runnerBusy = true;
+  syncRuntimeControls();
+
+  try {
+    const inputLines = state.stdin === '' ? [] : state.stdin.split(/\r?\n/);
+    const result = await executePython(code, inputLines, { exerciseId: ex.id, showInConsole: true });
+
+    if (!result.output) {
+      setConsoleOutput(ex.id, '[Program finished with no output]');
+    }
+  } catch (error) {
+    setConsoleOutput(ex.id, `Runner unavailable: ${error.message || error}`);
+  } finally {
+    runnerBusy = false;
+    syncRuntimeControls();
+  }
+}
+
+function findContainsFailure(ex, code) {
+  if (!Array.isArray(ex.checks)) return '';
+
+  for (const check of ex.checks) {
+    if (check.type === 'contains' && !code.includes(check.value)) {
+      return check.msg;
+    }
+  }
+
+  return '';
+}
+
+function loadRunCaseInput(exId, inputs) {
+  const state = getWorkStateById(exId);
+  if (!state) return;
+
+  state.stdin = (inputs || []).join('\n');
+
+  const currentExercise = exercises[currentIndex];
+  if (!currentExercise || currentExercise.id !== Number(exId)) return;
+
+  const stdinEditor = document.getElementById('stdinEditor');
+  if (stdinEditor) stdinEditor.value = state.stdin;
+}
+
+function buildMismatchMessage(runCase, expected, actual) {
+  const inputSummary = runCase.inputs && runCase.inputs.length
+    ? `Test input:\n${runCase.inputs.join('\n')}\n\n`
+    : '';
+
+  return `Your code ran, but the output did not match this test.\n\n${inputSummary}Expected:\n${expected || '[no output]'}\n\nGot:\n${actual || '[no output]'}`;
+}
+
+async function runExerciseCases(ex, code) {
+  if (!ex.runCases || !ex.runCases.length) {
+    return { ok: true };
+  }
+
+  for (const runCase of ex.runCases) {
+    const result = await executePython(code, runCase.inputs || [], { exerciseId: ex.id, showInConsole: false });
+
+    if (result.missingInput) {
+      loadRunCaseInput(ex.id, runCase.inputs || []);
+      setConsoleOutput(ex.id, result.output || '[Program finished with no output]');
+      return {
+        ok: false,
+        message: 'Your program asked for more input than this test provided. I loaded the test input into Program Input so you can run it and debug.'
+      };
+    }
+
+    if (result.hadError) {
+      loadRunCaseInput(ex.id, runCase.inputs || []);
+      setConsoleOutput(ex.id, result.output || '[Program finished with no output]');
+      return {
+        ok: false,
+        message: 'Your code hit an error while running. I loaded the test input into Program Input so you can run it below and fix the problem.'
+      };
+    }
+
+    const actual = normalizeConsoleText(result.output);
+    const expected = normalizeConsoleText(runCase.expected);
+
+    if (actual !== expected) {
+      loadRunCaseInput(ex.id, runCase.inputs || []);
+      setConsoleOutput(ex.id, result.output || '[Program finished with no output]');
+      return {
+        ok: false,
+        message: buildMismatchMessage(runCase, expected, actual)
+      };
+    }
+  }
+
+  return { ok: true };
+}
+
+// ===================== HINT =====================
+function showHint() {
+  const ex = exercises[currentIndex];
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback hint';
+  fb.textContent = ex.hint;
+}
+
+// ===================== NAVIGATION =====================
+function goTo(index) {
+  currentIndex = index;
+  renderExercise();
+}
+
+function next() {
+  if (currentIndex < exercises.length - 1) {
+    currentIndex++;
+    renderExercise();
+  } else {
+    showCompletion();
+  }
+}
+
+function prev() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderExercise();
+  }
+}
+
+// ===================== PROGRESS =====================
+function updateProgress() {
+  const total = exercises.length;
+  const done = Object.values(completed).filter(v => v === true).length;
+  const pct = Math.round((done / total) * 100);
+
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${done} / ${total}`;
+
+  const totalAttempted = Object.keys(completed).length;
+  document.getElementById('scoreBadge').textContent = `Score: ${done} / ${totalAttempted || 0}`;
+}
+
+// ===================== COMPLETION SCREEN =====================
+function showCompletion() {
+  const total = exercises.length;
+  const done = Object.values(completed).filter(v => v === true).length;
+  const pct = Math.round((done / total) * 100);
+
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `
+    <div class="completion-screen show">
+      <div class="trophy">&#127942;</div>
+      <h2>Course Complete!</h2>
+      <p>You've finished all ${total} exercises.</p>
+      <div class="final-score">${done} / ${total}</div>
+      <p>${pct >= 80 ? "Excellent work! You're ready for the test." : pct >= 50 ? "Good effort! Review the topics you missed." : "Keep practising! Try the exercises you missed again."}</p>
+      <button class="btn btn-restart" onclick="restart()">Restart Course</button>
+    </div>
+  `;
+}
+
+function restart() {
+  currentIndex = 0;
+  completed = {};
+  attempts = {};
+  work = {};
+  renderExercise();
+}
+
+// ===================== UTILS =====================
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+function escapeAttr(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// ===================== INIT =====================
+renderExercise();
+</script>
+
+</body>
+</html>
