@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KS3 Python IDLE Challenge Checker</title>
+<style>
+  :root { --navy:#16324f; --blue:#2f80ed; --sky:#eaf4ff; --green:#1f8a4c; --red:#c0392b; --orange:#f39c12; --ink:#1f2937; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: Arial, Helvetica, sans-serif; background: linear-gradient(135deg, #edf6ff, #fff7e6); color:var(--ink); }
+  header { background: var(--navy); color:white; padding:22px 28px; }
+  header h1 { margin:0 0 6px; font-size:28px; }
+  header p { margin:0; font-size:15px; opacity:.92; }
+  main { max-width:1100px; margin:22px auto; padding:0 18px 30px; display:grid; grid-template-columns: 1fr 1.15fr; gap:18px; }
+  .panel { background:white; border-radius:18px; box-shadow:0 10px 24px rgba(0,0,0,.12); overflow:hidden; border:1px solid rgba(0,0,0,.08); }
+  .panel h2 { margin:0; padding:14px 18px; background:var(--sky); color:var(--navy); font-size:21px; }
+  .panel .content { padding:18px; }
+  .challenge li { margin:10px 0; line-height:1.35; }
+  .success { background:#e9f8ef; border-left:6px solid var(--green); padding:12px 14px; border-radius:10px; margin-top:14px; }
+  .idle { background:#f3f4f6; border-radius:18px; overflow:hidden; border:1px solid #c7cbd1; }
+  .idlebar { background:#d8dde6; padding:9px 12px; font-weight:bold; color:#222; display:flex; align-items:center; gap:8px; }
+  .dot { width:12px; height:12px; border-radius:50%; display:inline-block; background:#ff605c; } .dot:nth-child(2){background:#ffbd44;} .dot:nth-child(3){background:#00ca4e;}
+  textarea { width:100%; min-height:390px; resize:vertical; border:0; padding:16px; font-family:"Consolas", "Courier New", monospace; font-size:15px; line-height:1.45; outline: none; background:#fff; color:#111827; }
+  button { border:0; border-radius:12px; padding:12px 16px; font-weight:bold; cursor:pointer; margin-right:8px; }
+  #checkBtn { background:var(--blue); color:white; } #resetBtn { background:#e5e7eb; color:#111827; } #exampleBtn { background:#ffe7b8; color:#6b4300; }
+  #results { margin-top:14px; padding:14px; border-radius:14px; background:#f8fafc; border:1px solid #d9e2ec; }
+  .result { padding:8px 0; border-bottom:1px solid #e5e7eb; } .result:last-child { border-bottom:0; }
+  .pass { color:var(--green); font-weight:bold; } .fail { color:var(--red); font-weight:bold; }
+  .score { font-size:22px; font-weight:bold; margin-bottom:8px; }
+  pre { background:#111827; color:#d1fae5; padding:14px; border-radius:12px; overflow:auto; font-size:14px; }
+  footer { max-width:1100px; margin:0 auto 20px; padding:0 18px; color:#4b5563; font-size:13px; }
+  @media (max-width: 850px){ main{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>KS3 Python IDLE Challenge Checker</h1>
+  <p>Write your Python program, then click <strong>Check my program</strong>. This checker looks for the key requirements from the challenge.</p>
+</header>
+<main>
+  <section class="panel challenge">
+    <h2>Programming Challenge: Snack Order Checker</h2>
+    <div class="content">
+      <p><strong>Your task:</strong> Create a program for a school snack shop.</p>
+      <ol>
+        <li>Ask the student for their <strong>name</strong>.</li>
+        <li>Ask how many <strong>snacks</strong> they want and convert it to an integer.</li>
+        <li>Ask how many <strong>drinks</strong> they want and convert it to an integer.</li>
+        <li>Calculate the <strong>total number of items</strong> using <code>+</code>.</li>
+        <li>Use <code>if</code> and <code>else</code>: if the total is <strong>5 or more</strong>, print <strong>Large order</strong>; otherwise print <strong>Small order</strong>.</li>
+        <li>Print the student's <strong>name</strong> and the <strong>total</strong>.</li>
+      </ol>
+      <div class="success"><strong>Target level:</strong> input(), int(), variables, addition, print(), if/else and correct indentation.</div>
+      <h3>Useful reminders</h3>
+      <pre>name = input("Enter your name: ")
+score = int(input("Enter score: "))
+if score >= 50:
+    print("Pass")
+else:
+    print("Try again")</pre>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Python IDLE</h2>
+    <div class="content">
+      <div class="idle">
+        <div class="idlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span> Python 3.12 Shell - Student Code</div>
+        <textarea id="code" spellcheck="false" placeholder="# Type or paste your Python code here..."></textarea>
+      </div>
+      <p style="margin-top:14px;">
+        <button id="checkBtn" onclick="checkCode()">Check my program</button>
+        <button id="resetBtn" onclick="resetCode()">Reset</button>
+        <button id="exampleBtn" onclick="showExample()">Show a possible answer</button>
+      </p>
+      <div id="results"><em>Your results will appear here.</em></div>
+    </div>
+  </section>
+</main>
+<footer>
+  Teacher note: this page performs static checks. It does not run Python code, but it helps students check whether their solution meets the main KS3 requirements.
+</footer>
+<script>
+function normalise(code){
+  return code.replace(/#.*$/gm, '').trim();
+}
+function checkCode(){
+  const raw = document.getElementById('code').value;
+  const code = normalise(raw);
+  const lower = code.toLowerCase();
+  const lines = code.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  const checks = [
+    {name:'Asks for student name using input()', pass:/name\s*=\s*input\s*\(/i.test(code) || /student\s*=\s*input\s*\(/i.test(code)},
+    {name:'Uses input() at least three times', pass:(code.match(/input\s*\(/gi)||[]).length >= 3},
+    {name:'Converts snack/drink numbers to integers with int()', pass:(code.match(/int\s*\(\s*input\s*\(/gi)||[]).length >= 2},
+    {name:'Calculates a total using +', pass:/total\s*=.*\+/i.test(code)},
+    {name:'Uses if with total >= 5', pass:/if\s+.*total.*>=\s*5\s*:/i.test(code)},
+    {name:'Uses else:', pass:/\belse\s*:/i.test(code)},
+    {name:'Prints Large order and Small order', pass:/print\s*\(.*large order/i.test(lower) && /print\s*\(.*small order/i.test(lower)},
+    {name:'Prints the name and total', pass:/print\s*\([^\)]*name[^\)]*total|print\s*\([^\)]*total[^\)]*name/i.test(code)}
+  ];
+  const score = checks.filter(c=>c.pass).length;
+  let html = `<div class="score">Score: ${score}/${checks.length}</div>`;
+  checks.forEach(c => { html += `<div class="result"><span class="${c.pass ? 'pass':'fail'}">${c.pass ? '✓':'✗'}</span> ${c.name}</div>`; });
+  if(score === checks.length){
+    html += '<div class="success"><strong>Excellent!</strong> Your program appears to meet all requirements. Now test it in real Python IDLE or Trinket.</div>';
+  } else if(score >= 5){
+    html += '<div class="success"><strong>Nearly there.</strong> Improve the missing items, then check again.</div>';
+  } else {
+    html += '<div style="background:#fff4e5;border-left:6px solid var(--orange);padding:12px 14px;border-radius:10px;margin-top:14px;"><strong>Keep going.</strong> Use the reminders and challenge list to add the missing parts.</div>';
+  }
+  document.getElementById('results').innerHTML = html;
+}
+function resetCode(){
+  document.getElementById('code').value='';
+  document.getElementById('results').innerHTML='<em>Your results will appear here.</em>';
+}
+function showExample(){
+  document.getElementById('code').value = `name = input("Enter your name: ")
+snacks = int(input("How many snacks? "))
+drinks = int(input("How many drinks? "))
+
+total = snacks + drinks
+
+if total >= 5:
+    print("Large order")
+else:
+    print("Small order")
+
+print(name, "- Total items:", total)`;
+  checkCode();
+}
+</script>
+</body>
+</html>
