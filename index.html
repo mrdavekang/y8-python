@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Array Quest: Python Inventory Lab</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="side-nav" aria-label="Mission navigation">
+      <div class="brand">
+        <div class="brand-icon">🐍</div>
+        <div>
+          <strong>Array Quest</strong>
+          <span>Day 1: Python Lists</span>
+        </div>
+      </div>
+
+      <div class="student-card" id="studentCard">
+        <span class="muted">No adventurer yet</span>
+      </div>
+
+      <div class="xp-card">
+        <div class="xp-top"><span>XP</span><strong id="xpText">0 / 700</strong></div>
+        <div class="xp-bar"><div id="xpFill"></div></div>
+      </div>
+
+      <nav class="mission-list" id="missionList"></nav>
+
+      <div class="side-actions">
+        <button class="ghost small" id="backupBtn">Backup progress</button>
+        <button class="ghost small danger" id="resetBtn">Reset session</button>
+      </div>
+    </aside>
+
+    <main>
+      <section class="view active" id="landing">
+        <div class="hero">
+          <img src="assets/hero.png" alt="Array Quest Python Inventory Lab hero banner" />
+        </div>
+        <div class="panel landing-panel">
+          <div>
+            <p class="eyebrow">Year 8 Computing · Day 1</p>
+            <h1>Enter the Python Inventory Lab</h1>
+            <p class="lead">Learn how Python stores many values using lists. Build your own game inventory, beat the index game, and unlock challenge mode.</p>
+          </div>
+          <div class="login-card">
+            <h2>Adventurer Check-In</h2>
+            <div id="continueBox" class="continue-box hidden"></div>
+            <label>Your name
+              <input id="studentName" type="text" placeholder="e.g. Aisha" autocomplete="off" />
+            </label>
+            <label>Class
+              <input id="studentClass" type="text" placeholder="e.g. 8T" autocomplete="off" />
+            </label>
+            <label>Starting path
+              <select id="studentPath">
+                <option value="Beginner Path">I am new to arrays/lists</option>
+                <option value="Core Path">I have used lists before</option>
+                <option value="KL Arena">I attended KL Coding practice</option>
+              </select>
+            </label>
+            <button class="primary" id="startBtn">Start Day 1 Mission</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="mission1">
+        <header class="mission-header">
+          <div>
+            <p class="eyebrow">Mission 1</p>
+            <h1>What is a Python list?</h1>
+            <p class="lead">A list stores many values inside one variable. Think of it like a game backpack.</p>
+          </div>
+          <img class="header-img" src="assets/inventory.png" alt="Game inventory backpack with item slots" />
+        </header>
+
+        <div class="grid two">
+          <article class="panel">
+            <h2>Light Reading</h2>
+            <p>Instead of creating many separate variables...</p>
+            <pre><code>item1 = "sword"
+item2 = "potion"
+item3 = "shield"</code></pre>
+            <p>Python lets us store them together in a list:</p>
+            <pre><code>inventory = ["sword", "potion", "shield"]</code></pre>
+            <div class="callout"><strong>Key idea:</strong> Lists keep items in order.</div>
+          </article>
+
+          <article class="panel guide-card">
+            <img src="assets/guide.png" alt="Guide character explaining lists" />
+            <h2>Vocabulary</h2>
+            <div class="vocab"><strong>List</strong><span>Stores many values</span></div>
+            <div class="vocab"><strong>Item</strong><span>One value inside a list</span></div>
+            <div class="vocab"><strong>Index</strong><span>The position number</span></div>
+          </article>
+        </div>
+
+        <article class="panel">
+          <h2>Quick Check</h2>
+          <div class="quiz" data-quiz="mission1">
+            <div class="q" data-answer="A structure that stores many values">
+              <p>1. What is a list?</p>
+              <button>A structure that stores many values</button>
+              <button>A single print command only</button>
+              <button>A type of error message</button>
+            </div>
+            <div class="q" data-answer="inventory">
+              <p>2. In <code>inventory = ["sword", "potion"]</code>, what is the variable name?</p>
+              <button>sword</button><button>inventory</button><button>potion</button>
+            </div>
+            <div class="q" data-answer="In order">
+              <p>3. How are items stored in a Python list?</p>
+              <button>Randomly</button><button>In order</button><button>Only backwards</button>
+            </div>
+          </div>
+          <button class="primary check-quiz" data-quiz="mission1">Check Mission 1</button>
+          <p class="feedback" id="feedback-mission1"></p>
+        </article>
+      </section>
+
+      <section class="view" id="mission2">
+        <header class="mission-header compact">
+          <div>
+            <p class="eyebrow">Mission 2</p>
+            <h1>Index starts at 0</h1>
+            <p class="lead">Python does not count list positions from 1. It starts from 0.</p>
+          </div>
+        </header>
+
+        <article class="panel">
+          <h2>The most important table today</h2>
+          <div class="index-table">
+            <div class="index-cell index-number">0</div>
+            <div class="index-cell index-number">1</div>
+            <div class="index-cell index-number">2</div>
+            <div class="index-cell index-number">3</div>
+            <div class="index-cell item">sword</div>
+            <div class="index-cell item">potion</div>
+            <div class="index-cell item">shield</div>
+            <div class="index-cell item">map</div>
+          </div>
+          <pre><code>inventory = ["sword", "potion", "shield", "map"]
+print(inventory[0])  # sword
+print(inventory[2])  # shield</code></pre>
+          <div class="warning"><strong>Common mistake:</strong> <code>inventory[4]</code> will crash here because the list only has indexes 0, 1, 2 and 3.</div>
+        </article>
+
+        <article class="panel">
+          <h2>Index Tap Practice</h2>
+          <p>Select the item that matches the Python code. Complete all 8 questions to unlock Code Lab.</p>
+          <div class="tap-game" id="tapGame"></div>
+          <p class="feedback" id="tapFeedback"></p>
+        </article>
+      </section>
+
+      <section class="view" id="mission3">
+        <header class="mission-header compact">
+          <div>
+            <p class="eyebrow">Mission 3</p>
+            <h1>Code Lab</h1>
+            <p class="lead">Read the syntax, play with a safe example, then create your own code for each list skill.</p>
+          </div>
+          <img class="header-img small-img" src="assets/items.png" alt="Fantasy item icons" />
+        </header>
+
+        <div class="tabs" id="codeTabs"></div>
+        <div class="code-progress-panel" id="codeProgressPanel"></div>
+        <article class="panel code-lab" id="codeLab"></article>
+      </section>
+
+      <section class="view" id="mission4">
+        <header class="mission-header">
+          <div>
+            <p class="eyebrow">Mission 4 · Midway Game</p>
+            <h1>Index Raider</h1>
+            <p class="lead">Use index numbers, list syntax and prediction skills. Beat 12 programming-style rounds to unlock the Index Explorer badge.</p>
+          </div>
+          <img class="header-img" src="assets/index-raider.png" alt="Index Raider game interface" />
+        </header>
+
+        <article class="panel game-panel">
+          <div class="game-hud">
+            <div><span>Score</span><strong id="raiderScore">0</strong></div>
+            <div><span>Lives</span><strong id="raiderLives">3</strong></div>
+            <div><span>Round</span><strong id="raiderRound">1 / 12</strong></div>
+          </div>
+          <div class="treasure-row" id="treasureRow"></div>
+          <div class="question-card">
+            <h2 id="raiderQuestion">What is treasure[0]?</h2>
+            <div id="raiderOptions" class="options"></div>
+            <p id="raiderFeedback" class="feedback"></p>
+          </div>
+          <button class="primary" id="restartRaider">Restart Index Raider</button>
+        </article>
+      </section>
+
+      <section class="view" id="mission5">
+        <header class="mission-header compact">
+          <div>
+            <p class="eyebrow">Mission 5 · Inventory Builder 1</p>
+            <h1>Guided Inventory Builder</h1>
+            <p class="lead">Most scaffolded. Replace the TODOs and build one complete inventory program.</p>
+          </div>
+          <img class="header-img" src="assets/path-cards.png" alt="Beginner, Core and KL path cards" />
+        </header>
+
+        <div class="grid two">
+          <article class="panel">
+            <h2>Beginner Scaffold</h2>
+            <p>Use this if you need a clear start, but it is <strong>not</strong> a full answer. Replace every <code>TODO</code> with your own ideas.</p>
+            <pre><code># 1. Create your own inventory list
+inventory = [TODO, TODO, TODO, TODO]
+
+# 2. Print the full list
+print(TODO)
+
+# 3. Print one item using an index
+print(TODO)
+
+# 4. Change one item
+inventory[TODO] = TODO
+
+# 5. Add one new item
+inventory.append(TODO)
+
+# 6. Count the items
+print(TODO)</code></pre>
+            <div class="callout"><strong>Think first:</strong> What game are you making? Adventure, school bag, sports team, cafe order, or your own theme?</div>
+          </article>
+          <article class="panel">
+            <h2>Core Requirements</h2>
+            <ul class="checklist">
+              <li>Create a list with at least 4 items.</li>
+              <li>Print the full list using the list variable.</li>
+              <li>Print one item using an index, for example <code>inventory[0]</code>.</li>
+              <li>Change one item using <code>inventory[index] = "new item"</code>.</li>
+              <li>Use <code>inventory.append("new item")</code> to add one item.</li>
+              <li>Use <code>print(len(inventory))</code> to count the items.</li>
+            </ul>
+            <div class="scenario-grid">
+              <div><strong>Adventure</strong><span>sword, potion, map...</span></div>
+              <div><strong>School bag</strong><span>book, ruler, laptop...</span></div>
+              <div><strong>Cafe order</strong><span>burger, fries, juice...</span></div>
+              <div><strong>Sports team</strong><span>players, kit, scores...</span></div>
+            </div>
+          </article>
+        </div>
+
+        <article class="panel builder-page-card">
+          <h2>Inventory Builder 1 · Guided Inventory</h2>
+          <p class="muted">Complete this level to unlock Inventory Builder 2. Run your code, then use the structure checker.</p>
+          <textarea id="inventoryCode" class="code-editor large-editor" spellcheck="false" placeholder="Write or paste your Python inventory code here..."></textarea>
+          <div class="button-row">
+            <button class="primary" id="runInventoryCode">Run in web Python</button>
+            <button class="ghost" id="checkInventoryCode">Check Builder 1</button>
+            <button class="ghost" id="saveInventoryCode">Save code</button>
+            <button class="ghost" id="resetInventoryStarter">Reset Builder 1</button>
+          </div>
+          <div id="inventoryOutput" class="python-output hidden"></div>
+          <div id="inventoryChecklist" class="result-list"></div>
+        </article>
+      </section>
+
+      <section class="view" id="mission6">
+        <header class="mission-header compact">
+          <div>
+            <p class="eyebrow">Mission 6 · Inventory Builder 2</p>
+            <h1>Cafe Order Update</h1>
+            <p class="lead">Less scaffolded. You now choose the items and write more of the program yourself.</p>
+          </div>
+          <img class="header-img small-img" src="assets/items.png" alt="Fantasy item icons" />
+        </header>
+
+        <div class="grid two">
+          <article class="panel challenge-card">
+            <span class="kl-level bronze">Inventory Builder 2</span>
+            <h2>Cafe Order Update</h2>
+            <p>Create a cafe order list, then access, update, append and count the items.</p>
+            <ul class="checklist">
+              <li>Use the variable name <code>order</code>.</li>
+              <li>Create at least 4 food or drink items.</li>
+              <li>Print the full order.</li>
+              <li>Print the item at index <code>2</code>.</li>
+              <li>Replace one item using an index.</li>
+              <li>Append one dessert or drink.</li>
+              <li>Print the total number of items.</li>
+            </ul>
+          </article>
+          <article class="panel">
+            <h2>Reduced Scaffold</h2>
+            <p>You are given only the outline. You decide the cafe items, the index to replace, and the new item to append.</p>
+            <pre><code>order = ["...", "...", "...", "..."]
+print(order)
+print(order[2])
+
+order[...] = "..."
+order.append("...")
+
+print(order)
+print(len(order))</code></pre>
+            <div class="callout"><strong>Challenge:</strong> Make your output clear by adding useful print messages before each result.</div>
+          </article>
+        </div>
+
+        <article class="panel builder-page-card">
+          <textarea id="inventory2Code" class="code-editor large-editor" spellcheck="false" placeholder="Write your Cafe Order Update program here..."></textarea>
+          <div class="button-row">
+            <button class="primary" id="runInventory2Code">Run in web Python</button>
+            <button class="ghost" id="checkInventory2Code">Check Builder 2</button>
+            <button class="ghost" id="saveInventory2Code">Save code</button>
+            <button class="ghost" id="resetInventory2Starter">Reset Builder 2</button>
+          </div>
+          <div id="inventory2Output" class="python-output hidden"></div>
+          <div id="inventory2Checklist" class="result-list"></div>
+        </article>
+      </section>
+
+      <section class="view" id="mission7">
+        <header class="mission-header compact">
+          <div>
+            <p class="eyebrow">Mission 7 · Inventory Builder 3</p>
+            <h1>Game Shop Stock Tracker</h1>
+            <p class="lead">Least scaffolded. Use the requirements to design the full program independently.</p>
+          </div>
+          <img class="header-img" src="assets/inventory.png" alt="Inventory backpack with item slots" />
+        </header>
+
+        <div class="grid two">
+          <article class="panel challenge-card">
+            <span class="kl-level silver">Inventory Builder 3</span>
+            <h2>Game Shop Stock Tracker</h2>
+            <p>You decide the shop items and write the full program from the requirements.</p>
+            <ul class="checklist">
+              <li>Use the variable name <code>stock</code>.</li>
+              <li>Create at least 5 shop items.</li>
+              <li>Print the last item using an index.</li>
+              <li>Replace a sold-out item using an index.</li>
+              <li>Append one new arrival.</li>
+              <li>Print the final stock list and its length.</li>
+            </ul>
+          </article>
+          <article class="panel">
+            <h2>Minimal Scaffold</h2>
+            <p>No TODOs this time. Plan first, then code. Your program should prove you can use each list skill without copying a full template.</p>
+            <div class="scenario-grid">
+              <div><strong>Possible items</strong><span>controller, keyboard, headset...</span></div>
+              <div><strong>Sold out</strong><span>replace one item by index</span></div>
+              <div><strong>New arrival</strong><span>append one item</span></div>
+              <div><strong>Final count</strong><span>use len(stock)</span></div>
+            </div>
+          </article>
+        </div>
+
+        <article class="panel builder-page-card">
+          <textarea id="inventory3Code" class="code-editor large-editor" spellcheck="false" placeholder="Write your Stock Tracker program here..."></textarea>
+          <div class="button-row">
+            <button class="primary" id="runInventory3Code">Run in web Python</button>
+            <button class="ghost" id="checkInventory3Code">Check Builder 3</button>
+            <button class="ghost" id="saveInventory3Code">Save code</button>
+            <button class="ghost" id="resetInventory3Starter">Reset Builder 3</button>
+          </div>
+          <div id="inventory3Output" class="python-output hidden"></div>
+          <div id="inventory3Checklist" class="result-list"></div>
+        </article>
+      </section>
+
+      <section class="view" id="mission8">
+        <header class="mission-header">
+          <div>
+            <p class="eyebrow">Mission 8 · Optional Extension · Competitive Mode</p>
+            <h1>KL Arena</h1>
+            <p class="lead">For KL Coding students and fast finishers. These questions now move beyond simple list syntax into loops, conditions, 2D lists, sorting and a Gold preview.</p>
+          </div>
+          <img class="header-img" src="assets/kl-arena.png" alt="KL Arena challenge gate" />
+        </header>
+
+        <article class="panel syntax-arena-card">
+          <h2>Competition Rules</h2>
+          <p>Do not hard-code the answer. Your program should work if the input list changes. For each gate, write Python code, run it in the web Python editor, then type the final output. The app will only mark the gate if your code and output both look convincing.</p>
+        </article>
+
+        <div class="challenge-grid kl-grid">
+          <article class="panel challenge-card kl-card">
+            <span class="kl-level bronze">Bronze Gate 1</span>
+            <h2>Salvageable Supply Sum</h2>
+            <p>Output the sum of all positive integers in the list. Negative values are spoiled supplies and should be ignored.</p>
+            <pre><code>supplies = [12, -5, 7, 0, -3, 20, 8]</code></pre>
+            <textarea class="code-editor small-editor" id="kl1" spellcheck="false"></textarea>
+            <label class="answer-row">Final output
+              <input id="kl1Answer" type="text" placeholder="Type the output only" />
+            </label>
+            <div class="button-row compact-row">
+              <button class="primary kl-run" data-target="kl1">Run in web Python</button>
+              <button class="ghost kl-check" data-target="kl1">Check Bronze Gate 1</button>
+            </div>
+            <div id="kl1Output" class="python-output hidden"></div>
+            <div id="kl1Feedback" class="result-list"></div>
+          </article>
+
+          <article class="panel challenge-card kl-card">
+            <span class="kl-level bronze">Bronze Gate 2</span>
+            <h2>Odd Product</h2>
+            <p>Multiply all odd numbers in the list. If there are no odd numbers, the answer should be 1.</p>
+            <pre><code>numbers = [2, 9, 4, 5, 7, 10]</code></pre>
+            <textarea class="code-editor small-editor" id="kl2" spellcheck="false"></textarea>
+            <label class="answer-row">Final output
+              <input id="kl2Answer" type="text" placeholder="Type the output only" />
+            </label>
+            <div class="button-row compact-row">
+              <button class="primary kl-run" data-target="kl2">Run in web Python</button>
+              <button class="ghost kl-check" data-target="kl2">Check Bronze Gate 2</button>
+            </div>
+            <div id="kl2Output" class="python-output hidden"></div>
+            <div id="kl2Feedback" class="result-list"></div>
+          </article>
+
+          <article class="panel challenge-card kl-card">
+            <span class="kl-level bronze">Bronze Gate 3</span>
+            <h2>Peak Detector</h2>
+            <p>Count how many numbers are greater than the number immediately before and after them. The first and last numbers do not count.</p>
+            <pre><code>numbers = [4, 9, 3, 7, 6, 8, 2, 8, 1]</code></pre>
+            <textarea class="code-editor small-editor" id="kl3" spellcheck="false"></textarea>
+            <label class="answer-row">Final output
+              <input id="kl3Answer" type="text" placeholder="Type the output only" />
+            </label>
+            <div class="button-row compact-row">
+              <button class="primary kl-run" data-target="kl3">Run in web Python</button>
+              <button class="ghost kl-check" data-target="kl3">Check Bronze Gate 3</button>
+            </div>
+            <div id="kl3Output" class="python-output hidden"></div>
+            <div id="kl3Feedback" class="result-list"></div>
+          </article>
+
+          <article class="panel challenge-card kl-card">
+            <span class="kl-level bronze-silver">Bronze/Silver Gate 4</span>
+            <h2>Circle Coordinates</h2>
+            <p>You are given a radius and a 2D list of coordinates. Count how many points are inside or on the circle centred at (0, 0). Use <code>x*x + y*y &lt;= r*r</code>.</p>
+            <pre><code>r = 5
+coordinates = [[3, 4], [5, 0], [4, 4], [0, 0], [-6, 0], [2, -2]]</code></pre>
+            <textarea class="code-editor small-editor" id="kl4" spellcheck="false"></textarea>
+            <label class="answer-row">Final output
+              <input id="kl4Answer" type="text" placeholder="Type the output only" />
+            </label>
+            <div class="button-row compact-row">
+              <button class="primary kl-run" data-target="kl4">Run in web Python</button>
+              <button class="ghost kl-check" data-target="kl4">Check Gate 4</button>
+            </div>
+            <div id="kl4Output" class="python-output hidden"></div>
+            <div id="kl4Feedback" class="result-list"></div>
+          </article>
+
+          <article class="panel challenge-card kl-card">
+            <span class="kl-level silver">Silver Gate 5</span>
+            <h2>Sort the Entities</h2>
+            <p>Sort this 2D list in descending order by power level. Print the name of the middle entity after sorting.</p>
+            <pre><code>entities = [["Banshee", 5], ["Wraith", 8], ["Ghost", 3], ["Vampire", 7], ["Zombie", 4]]</code></pre>
+            <textarea class="code-editor small-editor" id="kl5" spellcheck="false"></textarea>
+            <label class="answer-row">Final output
+              <input id="kl5Answer" type="text" placeholder="Type the output only" />
+            </label>
+            <div class="button-row compact-row">
+              <button class="primary kl-run" data-target="kl5">Run in web Python</button>
+              <button class="ghost kl-check" data-target="kl5">Check Silver Gate 5</button>
+            </div>
+            <div id="kl5Output" class="python-output hidden"></div>
+            <div id="kl5Feedback" class="result-list"></div>
+          </article>
+
+          <article class="panel challenge-card kl-card gold-card">
+            <span class="kl-level gold">Gold Preview Gate 6</span>
+            <h2>Target Sum Regions</h2>
+            <p>Count how many continuous regions in the row add up to <code>k</code>. This is the 1D training version of the Gold rectangular-region problem.</p>
+            <pre><code>k = 2
+row = [1, 1, 3, -1]</code></pre>
+            <textarea class="code-editor small-editor" id="kl6" spellcheck="false"></textarea>
+            <label class="answer-row">Final output
+              <input id="kl6Answer" type="text" placeholder="Type the output only" />
+            </label>
+            <div class="button-row compact-row">
+              <button class="primary kl-run" data-target="kl6">Run in web Python</button>
+              <button class="ghost kl-check" data-target="kl6">Check Gold Preview</button>
+            </div>
+            <div id="kl6Output" class="python-output hidden"></div>
+            <div id="kl6Feedback" class="result-list"></div>
+            <div class="hint-box"><strong>Hard mode:</strong> After solving the row version, try extending your idea to a 2D grid by checking every rectangle.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="exit">
+        <header class="mission-header compact">
+          <div>
+            <p class="eyebrow">Final Mission</p>
+            <h1>Exit Ticket</h1>
+            <p class="lead">Show what you understand before the end of the lesson.</p>
+          </div>
+          <img class="header-img small-img" src="assets/badges.png" alt="Achievement badges" />
+        </header>
+
+        <article class="panel">
+          <h2>Answer these questions</h2>
+          <label>1. What index does Python start counting from?
+            <input id="exit1" type="text" placeholder="Type your answer" />
+          </label>
+          <label>2. What does this print? <code>animals = ["cat", "dog", "rabbit"]</code> then <code>print(animals[1])</code>
+            <input id="exit2" type="text" placeholder="Type your answer" />
+          </label>
+          <label>3. What does <code>.append()</code> do?
+            <input id="exit3" type="text" placeholder="Type your answer" />
+          </label>
+          <label>4. Give one example where a game could use a list.
+            <textarea id="exit4" rows="3" placeholder="Example: inventory, scores, enemies..."></textarea>
+          </label>
+          <label>Reflection: Today I learned that a Python list can be used to store...
+            <textarea id="reflection" rows="4"></textarea>
+          </label>
+          <div class="button-row">
+            <button class="primary" id="submitExit">Submit Exit Ticket</button>
+            <button class="ghost" id="printSummary">Print / Save PDF Summary</button>
+          </div>
+          <div id="summary" class="summary-card hidden"></div>
+        </article>
+      </section>
+
+      <div class="bottom-nav">
+        <button class="ghost" id="prevBtn">← Previous</button>
+        <button class="primary" id="nextBtn">Next Mission →</button>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
